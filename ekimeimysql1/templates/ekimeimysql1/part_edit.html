@@ -1,0 +1,214 @@
+{% extends 'ekimeimysql1/base.html' %}
+{% load widget_tweaks %}
+
+{% block title %}パート編集 - {{ movie }}{% endblock %}
+
+{% load static %}
+{% block content %}
+<link rel="stylesheet" href="{% static 'ekimeimysql1/part_edit.css' %}">
+<link rel="stylesheet" href="//code.jquery.com/ui/1.11.4/themes/smoothness/jquery-ui.css" />
+<script src="//code.jquery.com/jquery-1.10.2.js"></script>
+<script src="//code.jquery.com/ui/1.11.4/jquery-ui.js"></script>
+<h2>パート情報編集</h2>
+<form action="" method="post" enctype="multipart/form-data">
+{{ form.as_p }}
+<div class="youtube-frame">
+	<div class="youtube-container">
+		<div class="youtube">
+			<iframe src="https://www.youtube.com/embed/{{ movie.main_id }}"  frameborder='0' gesture='media' allowfullscreen></iframe>
+		</div>
+	</div>
+</div>
+<form name="part_add" method="post">
+	<h3>パート</h3>
+	<div class="part-list">
+		{{ formset.management_form }}
+		{% for form in formset %}
+		{% if form.errors %}
+			{{ form.non_field_errors }}
+		{% endif %}
+		<div class="part-form">
+			<div class="part-form-content">
+				{{ form.ORDER }}
+				{{ form.DELETE }}
+				<table class="part-form-table">
+					<tr>
+						{{ form.non_field_errors }}
+						{{ form.id }}
+						{{ form.part_num }}{% if form.part_num.value %}{{ form.part_num.value }}{% endif %}
+						{{ form.movie }}
+						<div class="hidden-field-container">
+							{{ form.participant }}
+							{{ form.category }}
+							{{ form.part_song }}
+							{{ form.part_vocal }}
+						</div>
+						{{ form.part_name_short }}
+						<td class="td-part_name_short" rowspan="2">{% if form.part_name_short.value %}{{ form.part_name_short.value }}{% endif %}</td>
+						<td class="td-participant"></td>
+						{{ form.part_name }}
+						<td class="td-part_name">{% if form.part_name.value %}{{ form.part_name.value }}{% endif %}</td>
+						<td class="td-category"></td>
+					</tr>
+					<tr>
+						<td class="td-part_song"></td>
+						<td class="td-part_vocal"></td>
+						{{ form.start_time }}
+						<td class="td-start_time">{% if form.start_time.value %}{{ form.start_time.value }}{% endif %}</td>
+					</tr>
+				</table>
+				<p class="td-explanation">
+				{{ form.explanation }}{% if form.explanation.value %}{{ form.explanation.value }}{% endif %}
+				</p>
+			</div>
+		</div>
+		{% for field, errors in form.errors.items %}
+			{% for error in errors %}
+				{{ field }}{{ error }}
+			{% endfor %}
+		{% endfor %}
+		{% endfor %}
+	</div>
+	<input type="button" class="part-add" value="パート追加">
+	{% csrf_token %}
+	<button type="button" onclick="submit();" class="btn btn-primary">送信</button>
+</form>
+</form>
+<div class="modal">
+	<div class="modal-bg"></div>
+	<div class="part-modal">
+		<div class="part-modal-content">
+		</div>
+		<a href="javascript:void(0);" onclick="window.open('{% url 'ekimeimysql1:popup_song_create' %}', 'subwin', 'width=500,height=500');">+Song</a>
+		<a href="javascript:void(0);" onclick="window.open('{% url 'ekimeimysql1:popup_vocal_create' %}', 'subwin', 'width=500,height=500');">+Vocal</a>
+		<a class="modal-close">閉じる</a>
+		<a class="modal-save">保存</a>
+	</div>
+</div>
+{% endblock %}
+
+{% block extrajs %}
+<link rel="stylesheet" href="//code.jquery.com/ui/1.11.4/themes/smoothness/jquery-ui.css" />
+<script src="//code.jquery.com/jquery-1.10.2.js"></script>
+<script src="//code.jquery.com/ui/1.11.4/jquery-ui.js"></script>
+<script>
+	function add_song(name, pk) {
+		var select = $('.part-modal-content').children('select.part_song')[0];
+		var option = document.createElement('option');
+		option.setAttribute('value', pk);
+		option.innerHTML = name;
+
+		select.add(option, 0);
+		select.options[0].selected = true;
+	}
+
+	function add_vocal(name, pk) {
+		var select = $('.part-modal-content').children('select.part_vocal')[0];
+		var option = document.createElement('option');
+		option.setAttribute('value', pk);
+		option.innerHTML = name;
+
+		select.add(option, 0);
+		select.options[0].selected = true;
+	}
+
+	$(function() {
+		var totalManageElement = $('input#id_part_set-TOTAL_FORMS');
+		var initialManageElement = $('input#id_part_set-INITIAL_FORMS');
+		// initialManageElement.val(0);
+
+		$(document).on('click', '.part-add', function() {
+			part_add();
+		})
+
+		function part_add() {
+			var currentFileCount = 0;
+			$('.part-form').each(function() {
+				currentFileCount++;
+			})
+			var element = "a";
+			$('.part-list').append(element);
+			currentFileCount += 1;
+			totalManageElement.attr('value', currentFileCount);
+		}
+
+		$(document).on('click', '.part-form', function() {
+			part_edit(this);
+		})
+
+		fields = ['part_num', 'part_name_short', 'part_name', 'participant', 'category', 'start_time', 'part_song', 'part_vocal', 'explanation']
+		fields_name = ['', 'パート番号', 'パート名', '参加名義', 'カテゴリー', '開始時間', '曲(パート)', 'ボーカル(パート)', '補足説明']
+
+		$('.part-form').each(function(index, form) {
+			$.each(fields,
+				function(i, elem) {
+					if (elem == 'participant' || elem == 'part_song' || elem == 'part_vocal' || elem == 'category'){
+						selectbox_text = "";
+						selectbox_selected = $(form).find('.' + elem).children(':selected')
+						len = selectbox_selected.length;
+						selectbox_selected.each(function(i, elem) {
+							selectbox_text += $(elem).text()
+							if (i != len - 1) selectbox_text += "、";
+						})
+						$(form).find('.td-' + elem).text(selectbox_text);
+					}
+				})
+		})
+
+		function part_edit(part) {
+			part_index = $('div.part-form').index(part);
+			console.log(part_index);
+			$('.part-modal-content').empty()
+			$.each(fields,
+				function(index, elem) {
+					fields_value = $(part).find('.' + elem).attr("value");
+					if (fields_value == undefined) fields_value = "";
+					if (elem == 'participant' || elem == 'part_song' || elem == 'part_vocal' || elem == 'category'){
+						selectbox = $(part).find('.' + elem);
+						selectbox_value = selectbox.val()
+						selectbox_clone = selectbox.clone().val(selectbox_value);
+						$('.part-modal-content').append(selectbox_clone);
+					} else {
+						context = "<div class='field-" + elem + "'><label class='label-" + elem + "'>" + fields_name[index] + "</label><input type='text' class='input-" + elem + "' value='" + fields_value + "'></div>"
+						$('.part-modal-content').append(context);
+					}
+				}
+			)
+			$('.part-modal-content').append("<div class='part_index'>" + part_index + "</div>");
+			$('.modal').fadeIn();
+		}
+
+		$(document).on('click', '.modal-close', function() {
+			$('.modal').fadeOut();
+		})
+		$(document).on('click', '.modal-bg', function() {
+			$('.modal').fadeOut();
+		})
+
+		$(document).on('click', '.modal-save', function() {
+			part_index = $('.part_index').text();
+			context = "";
+			$('div.part-form').eq(part_index).find('.hidden-field-container').empty();
+			$.each(fields,
+				function(index, elem) {
+					if (elem == 'participant' || elem == 'part_song' || elem == 'part_vocal' || elem == 'category'){
+						selectbox = $('.part-modal-content').find('.' + elem);
+						selectbox_value = selectbox.val()
+						selectbox_clone = selectbox.clone().val(selectbox_value);
+						$('div.part-form').eq(part_index).find('.hidden-field-container').append(selectbox_clone)
+
+						selectbox_text = $(selectbox).children(':selected').text();
+						$('div.part-form').eq(part_index).find('.td-' + elem).text(selectbox_text);
+					} else {
+						fields_value = $('.part-modal-content').find('.input-' + elem).val();
+						hiddeninput = $('input#id_part_set-' + part_index + '-' + elem);
+						hiddeninput.val(fields_value);
+						$('div.part-form').eq(part_index).find('.td-' + elem ).text(fields_value)
+					}
+				}
+			)
+			return false;
+		})
+	})
+</script>
+{% endblock %}

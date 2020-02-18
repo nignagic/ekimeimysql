@@ -1,0 +1,249 @@
+{% extends 'ekimeimysql1/base.html' %}
+{% load widget_tweaks %}
+{% load tags %}
+
+{% block title %}{{ movie }} - 詳細{% endblock %}
+
+{% load static %}
+{% block content %}
+<link rel="stylesheet" href="{% static 'ekimeimysql1/detail.css' %}">
+<link rel="stylesheet" href="//code.jquery.com/ui/1.11.4/themes/smoothness/jquery-ui.css" />
+<script src="//code.jquery.com/jquery-1.10.2.js"></script>
+<script src="//code.jquery.com/ui/1.11.4/jquery-ui.js"></script>
+
+<p><a href="{% url 'ekimeimysql1:list' %}">リストへ戻る</a></p>
+<div class="main-container">
+	<div class="movie-detail">
+		<div class="youtube-container">
+			<div class="youtube">
+				<iframe src="https://www.youtube.com/embed/{{ movie.main_id }}"  frameborder='0' gesture='media' allowfullscreen></iframe>
+			</div>
+		</div>
+		<div class="detail-original">
+			<a href="https://www.youtube.com/watch?v={{ movie.youtube_id }}" target="_blank" class="movie-title-link"><h2 class="movie-title">{{ movie.title }}</h2></a>
+			<div class="movie-channel">{{ movie.channel }}</div>
+			<div class="detail-addition">
+				{% if movie.song.all %}
+				<h3 class="detail-song-header">使用楽曲</h3>
+					{% for song in movie.song.all %}
+					<p><a href="{% url 'ekimeimysql1:song_list' song.id %}">{{ song }}</a>
+						{% if song.artist %}
+							{% for artist in song.artist.all %}
+							<a href=""> - {{ artist }}</a>
+							{% endfor %}
+						{% endif %}
+					</p>
+					{% endfor %}
+				{% endif %}
+				{% if movie.vocal.all %}
+				<h3 class="detail-vocal-header">使用ボーカル</h3>
+					{% for vocal in movie.vocal.all %}
+					<p><a href="{% url 'ekimeimysql1:vocal_list' vocal.id %}">{{ vocal }}</a></p>
+					{% endfor %}
+				{% endif %}
+			</div>
+			<h3 class="movie-published-header">投稿日時</h3>
+			<table class="movie-published">
+				<tbody>
+					<tr>
+						<td>世界標準時</td>{% load tz %}
+						<td class="movie-published-iso">{{ movie.published_at|utc|date:"Y年Nd日 H:i:s" }}</td>
+					</tr>
+					<tr>
+						<td>日本時間</td>
+						<td class="movie-published-jpn">{{ movie.published_at|date:"Y年Nd日 H:i:s" }}</td>
+					</tr>
+				</tbody>
+			</table>
+			<div class="movie-statistics">
+				<div class="movie-statistics-item">
+					<div class="movie-statistics-num">
+					{% if n_view == 0 %}
+						0
+					{% else %}
+						{{ movie.n_view }}
+					{% endif %}</div>
+					<div class="movie-statistics-name">再生回数</div>
+				</div>
+				<div class="movie-statistics-item">
+					<div class="movie-statistics-num">
+					{% if n_like == 0 %}
+						0
+					{% else %}
+						{{ movie.n_like }}
+					{% endif %}</div>
+					<div class="movie-statistics-name">高評価数</div>
+				</div>
+				<div class="movie-statistics-item">
+					<div class="movie-statistics-num">
+					{% if n_dislike == 0 %}
+						0
+					{% else %}
+						{{ movie.n_dislike }}
+					{% endif %}
+					</div>
+					<div class="movie-statistics-name">低評価数</div>
+				</div>
+				<div class="movie-statistics-item">
+					<div class="movie-statistics-num">
+					{% if n_comment == 0 %}
+						0
+					{% else %}
+						{{ movie.n_comment }}
+					{% endif %}</div>
+					<div class="movie-statistics-name">コメント数</div>
+				</div>
+			</div>
+			<div class="movie-description-container">
+				<p id="movie-description"></p>
+			</div>
+		</div>
+		<div class="related-movie">
+		</div>
+	</div>
+	<div class="movie-station-list">
+		<div class="all-open">すべて展開</div>
+		<div class="all-close">すべて閉じる</div>
+		{% for part in parts %}
+			<table class="part-table" data-part_id="{{ part.id }}" data-category="{{ part.category }}">
+				<tr>
+					<td class="td-part_name_short" rowspan="2">{{ part.part_name_short }}</td>
+					<td>
+					{{ part.song_name }}
+					{% for song in part.song.all %}
+						<a href="{% url 'ekimeimysql1:song_list' song.id %}">{{ song }}</a>
+						{% if forloop.last %}
+						{% else %}
+							<span>、</span>
+						{% endif %}
+					{% endfor %}
+					</td>
+				</tr>
+				<tr class="row-2">
+					<td>
+					{% for participant in part.participant.all %}
+						{{ participant }}
+						{% if forloop.last %}
+						{% else %}
+							<span>、</span>
+						{% endif %}
+					{% endfor %}
+					</td>
+				</tr>
+			</table>
+			<div class="part-detail-container">
+				<div class="part-detail">
+					<h4>{{ part.part_name_short }}</h4>
+					<div class="part-detail-row">
+						<div class="part-detail-label">パート名</div>
+						<div class="part-detail-content">{{ part.part_name }}</div>
+					</div>
+					<div class="part-detail-row">
+						<div class="part-detail-label">参加者(名義)</div>
+						<div class="part-detail-content">
+							<ul>
+							{% for participant in part.participant.all %}
+								<li>{{ participant }}</li>
+							{% endfor %}
+							</ul>
+						</div>
+					</div>
+					<div class="part-detail-row">
+						<div class="part-detail-label">使用楽曲</div>
+						<div class="part-detail-content">
+							<ul>
+								<li>{{ part.song_name }}</li>
+								{% for song in part.song.all %}
+									<li><a href="{% url 'ekimeimysql1:song_list' song.id %}">{{ song }}</a></li>
+								{% endfor %}
+							</ul>
+						</div>
+					</div>
+					<div class="part-detail-row">
+						<div class="part-detail-label">使用ボーカル</div>
+						<div class="part-detail-content">
+							<ul>
+							{% for vocal in part.vocal.all %}
+								<li><a href="{% url 'ekimeimysql1:vocal_list' vocal.id %}">{{ vocal }}</a></li>
+							{% endfor %}
+						</ul>
+						</div>
+					</div>
+					<div class="part-detail-row">
+						<div class="part-detail-label">種類</div>
+						<div class="part-detail-content">{{ part.category }}</div>
+					</div>
+					<div class="part-detail-row">
+						<div class="part-detail-label">開始位置</div>
+						<div class="part-detail-content">{{ part.start_time }}</div>
+					</div>
+					<div class="part-detail-row">
+						<div class="part-detail-label">説明</div>
+						<div class="part-detail-content">{{ part.explanation }}</div>
+					</div>
+				</div>
+				<div class="station-list-{{ part.id }}">
+				</div>
+			</div>
+		{% endfor %}
+	</div>
+</div>
+{% endblock %}
+
+{% block extrajs %}
+<link rel="stylesheet" href="//code.jquery.com/ui/1.11.4/themes/smoothness/jquery-ui.css" />
+<script src="//code.jquery.com/jquery-1.10.2.js"></script>
+<script src="//code.jquery.com/ui/1.11.4/jquery-ui.js"></script>
+<script>
+	$(function() {
+		$('.part-table').on('click', function() {
+			$(this).next('.part-detail-container').slideToggle();
+		})
+		$(document).on('click', '.movie-line-name', function() {
+			$(this).next('.station-ul').slideToggle();
+		})
+		$(document).on('click', '.all-open', function() {
+			$('.part-detail-container').slideDown();
+			$('.station-ul').slideDown();
+		})
+		$(document).on('click', '.all-close', function() {
+			$('.part-detail-container').slideUp();
+			$('.station-ul').slideUp();
+		})
+	})
+
+	$(function() {
+		$('.part-table').each(function(index, elem) {
+			forloop = 0;
+			id = $(elem).data('part_id');
+			category = $(elem).data('category');
+			var s = "http://localhost:8000/ekimeimysql1/api/partstation/" + id + "/?format=json";
+			(function(id, category) {
+				$.getJSON(s, function(data) {
+					beforeline = 0;
+					if (category == "駅名替え歌") {
+						forloop++;
+						$('.station-list-' + id).append("<h4 class='movie-line-name'>駅名替え歌</h4><ul class='station-ul station-ul-" + forloop + "'></ul>")
+					}
+					for (var i in data) {
+						line = data[i].line_service_code;
+						if (data[i].line_service_code != beforeline && category != "駅名替え歌") {
+							forloop++;
+							$('.station-list-' + id).append("<h4 class='movie-line-name'>" + data[i].line_service_name + "</h4><ul class='station-ul station-ul-" + forloop + "'></ul>")
+						}
+						if (category == "駅名替え歌") {
+							station_text = data[i].station_service_name + " - " + data[i].line_service_name + "[" +  data[i].pref + "]";
+						} else {
+							station_text = data[i].station_service_name;
+						}
+						var station = "<li class='station-name'><a href='http://localhost:8000/ekimeimysql1/station/" + data[i].station_service_code + "'>" + station_text + "</a></li>";
+						$('.station-ul-' + forloop).append(station)
+						beforeline = line;
+					}
+					$('.station-list-' + id).append("</ul>")
+				})
+			})(id, category);
+		})
+	})
+</script>
+{% endblock %}

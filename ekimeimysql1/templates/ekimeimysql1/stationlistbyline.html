@@ -1,0 +1,17 @@
+{% extends 'ekimeimysql1/base.html' %}
+
+{% block title %}{{ line }}{% endblock %}
+
+{% block content %}
+{{ line }}
+<ul>
+	{% for station, group_stations in transfers.items %}
+		<li>{{ station }}</li>
+		<ul>
+		{% for group_station in group_stations %}
+			<li>{{ group_station }} <a href="{% url 'ekimeimysql1:stationlistbylineview' group_station.line_code.line_code %}">{{ group_station.line_code }}</a>
+		{% endfor %}
+		</ul>
+	{% endfor %}
+</ul>
+{% endblock %}

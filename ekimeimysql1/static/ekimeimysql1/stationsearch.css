@@ -1,0 +1,68 @@
+body {
+	font-family: 游ゴシック体, 'Yu Gothic', YuGothic, 'ヒラギノ角ゴシック Pro', 'Hiragino Kaku Gothic Pro', 'YakuHanJPs', 'Neutral 2', ryo-gothic-plusn, sans-serif;
+	margin: 0;
+	padding: 0;
+	color: #000;
+	font-size: 16px;
+	font-style: normal;
+	font-weight: 700;
+	line-height: 1;
+	letter-spacing: calc(33em / 1000);
+}
+
+* {
+	box-sizing: border-box;
+	word-wrap: break-word;
+	line-height: 1.5em;
+	margin: 0;
+	/*padding: 0;*/
+}
+
+a {
+	text-decoration: none;
+	color: #027181;
+}
+
+a:hover {
+	color: #1cb1c4;
+}
+
+a. button {
+	color: inherit;
+	font-weight: inherit;
+	cursor: pointer;
+}
+
+h1, h2, h3, h4, h5, h6 {
+	font-size: 100%;
+	font-weight: inherit;
+	line-height: inherit;
+}
+
+ul, li {
+	list-style: none;
+	margin: 0;
+	padding: 0;
+}
+
+.main-content {
+	padding: 32px;
+}
+
+h2 {
+	margin: 16px 0;
+}
+
+table {
+	margin-left: 0px;
+	padding: 4px;
+	background-color: #f3f7f7;
+}
+
+td {
+	padding: 4px 8px;
+}
+
+small {
+	font-weight: normal;
+}

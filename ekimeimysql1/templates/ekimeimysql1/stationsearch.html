@@ -1,0 +1,29 @@
+{% extends 'ekimeimysql1/base.html' %}
+
+{% block title %}検索結果 - {{ word }}{% endblock %}
+
+{% load static %}
+{% block content %}
+<link rel="stylesheet" href="{% static 'ekimeimysql1/stationsearch.css' %}">
+<div class="main-content">
+	<p>駅名検索</p>
+	<form action="{% url 'ekimeimysql1:stationsearchview' %}" method="get">
+		<input type="text" name="q" value="{{ word }}">
+		<button type="submit">検索</button>
+	</form>
+	<a href="{% url 'ekimeimysql1:lineservicelistbycompanyview' %}">路線一覧へ戻る</a>
+	<h2>検索結果 - {{ word }} ({{ count }}件)</h2>
+	<table>
+		{% if stations %}
+			{% for station in stations %}
+			<tr>
+				<td>{{ station }}</td>
+				<td><a href="{% url 'ekimeimysql1:stationservicelistbylineview' station.line_service_code.line_service_code %}">{{ station.line_service_code }}</a><small> - {{ station.station_code.line_code.line_name }}</small></td>
+			</tr>
+			{% endfor %}
+		{% else %}
+			検索結果はありませんでした
+		{% endif %}
+	</table>
+</div>
+{% endblock %}

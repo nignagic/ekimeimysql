@@ -1,0 +1,60 @@
+<head>
+	<link rel='stylesheet' href="http://cdn.rawgit.com/JeremyFagis/dropify/master/dist/css/dropify.css" />
+	<script src="http://cdn.rawgit.com/JeremyFagis/dropify/master/dist/js/dropify.js"></script>
+</head>
+<body>
+
+<h3>アップロードするよ</h3>
+<form action="{% url 'ekimeimysql1:uploadStation' %}" method="post" enctype="multipart/form-data">
+  {% csrf_token %}
+  <input type="file" class="dropify" data-default-file="ファイルを選択してください" name="csv">
+  <button type="submit" class="btn" name="button">駅名アップロード</button>
+</form>
+
+<form action="{% url 'ekimeimysql1:uploadLine' %}" method="post" enctype="multipart/form-data">
+  {% csrf_token %}
+  <input type="file" class="dropify" data-default-file="ファイルを選択してください" name="csv">
+  <button type="submit" class="btn" name="button">路線アップロード</button>
+</form>
+
+<form action="{% url 'ekimeimysql1:uploadCompany' %}" method="post" enctype="multipart/form-data">
+  {% csrf_token %}
+  <input type="file" class="dropify" data-default-file="ファイルを選択してください" name="csv">
+  <button type="submit" class="btn" name="button">事業者アップロード</button>
+</form>
+
+<form action="{% url 'ekimeimysql1:uploadPref' %}" method="post" enctype="multipart/form-data">
+  {% csrf_token %}
+  <input type="file" class="dropify" data-default-file="ファイルを選択してください" name="csv">
+  <button type="submit" class="btn" name="button">都道府県アップロード</button>
+</form>
+
+<form action="{% url 'ekimeimysql1:uploadRailwayType' %}" method="post" enctype="multipart/form-data">
+  {% csrf_token %}
+  <input type="file" class="dropify" data-default-file="ファイルを選択してください" name="csv">
+  <button type="submit" class="btn" name="button">路線種別アップロード</button>
+</form>
+
+<form action="{% url 'ekimeimysql1:uploadStationService' %}" method="post" enctype="multipart/form-data">
+  {% csrf_token %}
+  <input type="file" class="dropify" data-default-file="ファイルを選択してください" name="csv">
+  <button type="submit" class="btn" name="button">駅名(運行系統)アップロード</button>
+</form>
+
+<form action="{% url 'ekimeimysql1:uploadLineService' %}" method="post" enctype="multipart/form-data">
+  {% csrf_token %}
+  <input type="file" class="dropify" data-default-file="ファイルを選択してください" name="csv">
+  <button type="submit" class="btn" name="button">路線(運行系統)アップロード</button>
+</form>
+
+<a href="{% url 'ekimeimysql1:StationDelete' %}">駅全削除</a>
+<a href="{% url 'ekimeimysql1:LineDelete' %}">路線全削除</a>
+<a href="{% url 'ekimeimysql1:CompanyDelete' %}">事業者全削除</a>
+<a href="{% url 'ekimeimysql1:StationServiceDelete' %}">駅(運行系統)全削除</a>
+<a href="{% url 'ekimeimysql1:LineServiceDelete' %}">路線(運行系統)全削除</a>
+<script>
+$(function(){
+  $('.dropify').dropify();
+})
+</script>
+</body>

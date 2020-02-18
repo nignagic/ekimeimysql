@@ -1,0 +1,247 @@
+body {
+	font-family: 游ゴシック体, 'Yu Gothic', YuGothic, 'ヒラギノ角ゴシック Pro', 'Hiragino Kaku Gothic Pro', 'YakuHanJPs', 'Neutral 2', ryo-gothic-plusn, sans-serif;
+	margin: 0;
+	padding: 0;
+	color: #000;
+	font-size: 16px;
+	font-style: normal;
+	font-weight: 700;
+	line-height: 1;
+	letter-spacing: calc(33em / 1000);
+}
+
+* {
+	box-sizing: border-box;
+	word-wrap: break-word;
+	line-height: 1.5em;
+	margin: 0;
+	padding: 0;
+}
+
+a {
+	text-decoration: none;
+	color: #333;
+}
+
+a:hover {
+	color: #1cb1c4;
+}
+
+a. button {
+	color: inherit;
+	font-weight: inherit;
+	cursor: pointer;
+}
+
+h1, h2, h3, h4, h5, h6 {
+	font-size: 100%;
+	font-weight: inherit;
+	line-height: inherit;
+}
+
+ul, li {
+	list-style: none;
+}
+
+.main-container {
+	width: 960px;
+	margin: 0 auto;
+	display: -webkit-box;
+	display: -ms-flexbox;
+	display: flex;
+	-webkit-box-pack: justify;
+	-ms-flex-pack: justify;
+}
+
+.movie-detail {
+	width: 60%;
+	padding: 8px;
+}
+
+.youtube-container {
+	position: sticky;
+	top: 32px;
+}
+
+.youtube {
+	position: relative;
+	width: 100%;
+}
+
+.youtube:before {
+	content: "";
+	display: block;
+	padding-top: calc(9/16*100%);
+}
+
+.youtube iframe {
+	position: absolute;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+}
+
+.movie-title {
+    font-size: 1.2rem;
+    line-height: 1.2;
+    padding: 16px 0;
+}
+
+.movie-statistics {
+	display: -webkit-box;
+	display: -ms-flexbox;
+	display: flex;
+	-webkit-box-pack: justify;
+	-ms-flex-pack: justify;
+	align-items: center;
+	margin: ;
+	padding: 8px 0;
+}
+
+.movie-statistics-item {
+	padding: 0 8px;
+}
+
+.movie-statistics-num {
+	text-align: center;
+	padding-bottom: 2px;
+	font-size: 24px;
+	font-weight: 600;
+	line-height: 1;
+}
+
+.movie-statistics-name {
+	margin-top: 4px;
+	padding: 4px;
+	border-radius: 4px;
+	font-size: 14px;
+	text-align: center;
+	color: #577381;
+	background-color: #f0f0f0;
+}
+
+.detail-song-header,
+.detail-vocal-header {
+	color: #1cb1c4;
+	line-height: 1.44444;
+	margin: 16px 0 4px 0;
+	padding: 0 0 4px 0;
+	border-bottom: 1px solid #1cb1c4;
+}
+
+.part-table {
+	width: 100%;
+	border: 1px solid #333;
+	padding: 4px;
+	table-layout: fixed;
+	word-break: break-all;
+	word-wrap: break-word;
+	position: sticky;
+	top: 32px;
+	background: #fff;
+	cursor: pointer;
+}
+
+.part-table td {
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+.td-part_name_short {
+	width: 2em;
+	text-overflow: clip;
+}
+
+.td-category {
+	width: 5em;
+}
+
+.td-vocal {
+	width: 6em;
+}
+
+.row-2 {
+	font-size: 14px;
+	font-weight: normal;
+}
+
+.part-detail-container {
+	padding: 8px;
+	display: none;
+}
+
+.part-detail {
+	background: #CAEFF9;
+	padding: 8px;
+	font-weight: normal;
+	font-size: 14px;
+}
+
+.part-detail-row {
+	display: flex;
+}
+
+.part-detail-label {
+	width: 8em;
+}
+
+.movie-station-list {
+	width: 40%;
+	padding: 8px;
+}
+
+.movie-line-name {
+	background-color: #1cb1c4;
+	color: #fff;
+	padding: 4px 8px;
+	margin: 8px 0;
+	position: sticky;
+	top: 96px;
+	cursor: pointer;
+}
+
+.station-name {
+	padding: 0;
+	color: rgba(0,0,0,0.6);
+}
+
+.station-name:hover {
+	color: #1cb1c4;
+}
+
+/*↓ design2*/
+.point-station {
+	background-color: #1cb1c4;
+	color: #fff;
+	padding: 4px 8px;
+	margin: 0;
+	position: sticky;
+	top: 96px;
+	cursor: pointer;
+}
+
+.line-list-container {
+	display: flex;
+}
+
+.open-button {
+	padding: 8px;
+}
+
+.line-list {
+	width: 100%;
+	border-left: 4px solid #1cb1c4;
+	margin: 0 auto;
+	padding: 0 16px;
+}
+
+.station-ul {
+	/*display: none;*/
+	padding: 0 0 8px 0;
+}
+
+.movie-line-name-new {
+	padding: 8px 0;
+}

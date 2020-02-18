@@ -1,0 +1,29 @@
+{% extends 'ekimeimysql1/base.html' %}
+
+{% block title %}事業者一覧{% endblock %}
+
+{% load static %}
+{% block content %}
+<link rel="stylesheet" href="{% static 'ekimeimysql1/company.css' %}">
+
+<div class="main-content">
+	<p>駅名検索</p>
+	<form action="{% url 'ekimeimysql1:stationsearchview' %}" method="get">
+		<input type="text" name="q" value="{{ word }}">
+		<button type="submit">検索</button>
+	</form>
+	<div class="title">事業者ごとの路線一覧</div>
+	<ul class="company-ul">
+		{% for company, lines in linebycompany.items %}
+		<li class="company-li">
+			<div class="company-name">{{ company }}</div>
+			<ul class="line-ul">
+				{% for line in lines %}
+				<li class="line-li"><a href="{% url 'ekimeimysql1:stationservicelistbylineview' line.line_service_code %}">{{ line }}</a></li>
+				{% endfor %}
+			</ul>
+		</li>
+		{% endfor %}
+	</ul>
+</div>
+{% endblock %}
