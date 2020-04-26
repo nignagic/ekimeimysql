@@ -151,11 +151,11 @@
 					dislike = resv.items[0].statistics.dislikeCount;
 					comment = resv.items[0].statistics.commentCount;
 					if (!like) {
-						like= "非公開";
-						dislike = "非公開";
+						like= "-1";
+						dislike = "-1";
 					}
 					if (!comment) {
-						comment = "非公開";
+						comment = "-1";
 					}	
 					description = resv.items[0].snippet.description;
 				};
@@ -176,17 +176,17 @@
 			d += "</div></a></div><div class='video-middle'><div class='video-middle-1'><div class='video-statistics'>"
 			d += "<div class='video-statistics-item'><div class='video-statistics-num'>" + view + "</div><div class='video-statistics-name'>再生回数</div></div>"
 			d += "<div class='video-statistics-item'><div class='video-statistics-num"
-			if (like == "非公開") {
+			if (like == "-1") {
 				d += " font-20";
 			}
 			d += "'>" + like + "</div><div class='video-statistics-name'>高評価数</div></div>"
 			d += "<div class='video-statistics-item'><div class='video-statistics-num"
-			if (like == "非公開") {
+			if (like == "-1") {
 				d += " font-20";
 			}
 			d += "'>" + dislike + "</div><div class='video-statistics-name'>低評価数</div></div>"
 			d += "<div class='video-statistics-item'><div class='video-statistics-num"
-			if (comment == "非公開") {
+			if (comment == "-1") {
 				d += " font-20";
 			}
 			d += "'>" + comment + "</div><div class='video-statistics-name'>コメント数</div></div>"

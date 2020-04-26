@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Prefecture, Railway_type, Company, Line, Station, LineService, StationService, Category, Creator, YoutubeChannel, Name, Artist, Song, Vocal, Movie, Part, StationInMovie
+from .models import Railway_type, Country, Region, Prefecture, Company, Line, Station, LineService, StationService, MovieCategory, Creator, YoutubeChannel, Name, Artist, Song, Vocal, Movie, Part, StationInMovie
 
 # Register your models here.
 
@@ -15,12 +15,16 @@ from .models import Prefecture, Railway_type, Company, Line, Station, LineServic
 # class MovieAdmin(admin.ModelAdmin):
 # 	list_display = ('title', 'channel', 'main_id', 'published_at', 'is_collab')
 
+admin.site.register(Railway_type)
+admin.site.register(Country)
+admin.site.register(Region)
 admin.site.register(Prefecture)
+admin.site.register(Company)
 admin.site.register(Line)
-admin.site.register(LineService)
 admin.site.register(Station)
+admin.site.register(LineService)
 admin.site.register(StationService)
-admin.site.register(Category)
+admin.site.register(MovieCategory)
 admin.site.register(Creator)
 admin.site.register(YoutubeChannel)
 admin.site.register(Name)

@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     'rest_framework',
     'users',
     'ekimeimysql1',
+    # 'datanewsql',
 ]
 
 MIDDLEWARE = [
@@ -128,3 +129,6 @@ STATIC_URL = '/static/'
 AUTH_USER_MODEL = 'users.User'
 
 DATA_UPLOAD_MAX_NUMBER_FIELDS = 100000000
+
+LOGIN_URL = 'ekimeimysql1:login'
+LOGIN_REDIRECT_URL = 'ekimeimysql1:top'

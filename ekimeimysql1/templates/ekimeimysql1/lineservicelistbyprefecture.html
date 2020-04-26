@@ -1,0 +1,21 @@
+{% extends 'ekimeimysql1/base.html' %}
+
+{% block title %}路線一覧 - {{ pref }}{% endblock %}
+
+{% load static %}
+{% block content %}
+<link rel="stylesheet" href="{% static 'ekimeimysql1/company.css' %}">
+
+<div class="main-content">
+	<ul class="company-ul">
+		<li class="company-li">
+			<div class="company-name">{{ pref }}</div>
+			<ul class="line-ul">
+				{% for line in lineservices %}
+				<li class="line-li"><a href="{% url 'ekimeimysql1:movielistbylineservice' line.line_service_code %}">{{ line }}</a></li>
+				{% endfor %}
+			</ul>
+		</li>
+	</ul>
+</div>
+{% endblock %}

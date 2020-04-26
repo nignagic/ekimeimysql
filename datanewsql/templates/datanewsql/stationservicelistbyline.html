@@ -1,0 +1,34 @@
+{% extends 'datanewsql/base.html' %}
+
+{% block title %}{{ lineservice }}{% endblock %}
+
+{% load static %}
+{% block content %}
+<link rel="stylesheet" href="{% static 'datanewsql/stationservicelistbyline.css' %}">
+<div class="main-content">
+	<div class="line-name">{{ lineservice }}</div>
+	<a href="{% url 'datanewsql:lineservicelistbycompanyview' %}">路線一覧へ戻る</a>
+	<ul class="line-ul">
+		{% for stationservice, group_stationservices in transfers.items %}
+		<li class="line-li">
+			<div class="station-info" style="border-color: {{ stationservice.get_color }};">
+				<div class="station-name">{{ stationservice }}</div>
+				<div class="station-numbering">{{ stationservice.get_numbering }}</div>
+			</div>
+			<ul class="station-ul">
+				<p>{{ stationservice.station_code.pref_code }}
+			{% for group_stationservice, transfers in group_stationservices.items %}
+				<li class="station-li"><!-- <a href="{% url 'datanewsql:stationlistbylineview' group_stationservice.line_code.line_code %}"> -->{{ group_stationservice.line_code }}<!-- </a> --></li>
+				<ul class="service-ul">
+				{% for transfer in transfers %}
+					<li class="service-li">{{ transfer }} <a href="{% url 'datanewsql:stationservicelistbylineview' transfer.line_service_code.line_service_code %}">{{ transfer.line_service_code }}</a></li>
+				{% endfor %}
+				</ul>
+			{% endfor %}
+			</ul>
+		</li>
+		{% endfor %}
+	</ul>
+	<small>&copy; 2020 nignagIC</small>
+</div>
+{% endblock %}

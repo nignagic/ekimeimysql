@@ -125,7 +125,7 @@
 								$(".line-option").hide();
 								$.getJSON(s, function(data) {
 									for (var i in data) {
-										var op_line = "<div value='" + data[i].line_service_code + "' class='line-option'>" + data[i].line_service_name + "</div>";
+										var op_line = "<div value='" + data[i].line_service_code + "' class='line-option'>" + data[i].__str__ + "</div>";
 										$(".line-select").append(op_line);
 									}
 								})
@@ -194,7 +194,7 @@
 					<div class="stations-content">
 						<div class="stations-relation">
 							{{ form.id }}
-							{{ form.id_in_movie | add_class:"id_in_movie" }}
+							{{ form.id_in_part | add_class:"id_in_part" }}
 							<div class="stations-relation-line"></div>
 							{{ form.back_rel | add_class:"back_rel" }}
 						</div>
@@ -204,7 +204,7 @@
 								<div class="station-name-container">
 									<div class="station-name-fixed">{{ form.station_service_code.value | get_station_service_code }}</div>
 									歌唱名：
-									{{ form.station_service_name | add_class:"station_service_name" }}
+									{{ form.station_sung_name | add_class:"station_sung_name" }}
 								</div>
 							</div>
 							<div class="line-search">
@@ -219,6 +219,10 @@
 				</div>
 			</div>
 		{% endfor %}
+
+			{% for error in form.errors %}
+			{{ error }}
+			{% endfor %}
 	{% csrf_token %}
 		</div>
 			</div>
@@ -256,7 +260,7 @@
 			val = $(station).attr("value");
 			name = $(station).data('name');
 			line_name = $(station).parent().data('line_name');
-			var element = "<div class='stations'><div class='stations-handle'><a class='sortable-handle'>■</a></div><div class='stations-content'><div class='stations-relation'><input type='name' name='stationinmovie_set-" + currentFileCount + "-id_in_movie'id='id_stationinmovie_set-" + currentFileCount + "-id_in_movie' class='id_in_movie'  value='" + currentFileCount + "'><div class='stations-relation-line'></div><select name='stationinmovie_set-" + currentFileCount + "-back_rel' id='id_stationinmovie_set-" + currentFileCount + "-back_rel' class='back_rel'><option value='0'>同一駅</option><option value='1' selected='selected'>つながっている</option><option value='2'>離れている</option></select></div><div class='stations-box'><input type='checkbox' name='postvalue[]' value='" + val + "' class='station_checkbox' checked='checked'><div class='stations-info'><input type='hidden' name='stationinmovie_set-" + currentFileCount + "-station_service_code' id='id_stationinmovie_set-" + currentFileCount + "-station_service_code' class='station_service_code'  value='" + val + "'><div class='station-name-container'><div class='station-name-fixed'>" + name + "</div>歌唱名：<input type='name' name='stationinmovie_set-" + currentFileCount + "-station_service_name'  value='" + name + "' id='id_stationinmovie_set-" + currentFileCount + "-station_service_name' class='station_service_name'></div></div><div class='line-search'><a class='line-search-button'>路線検索</a></div><div class='stations-remarks'>備考<input type='textbox' name='remarks[]' class='stations-remarks-text'></div><div class='stations-delete'><a class='sortable-delete'>削除</a></div></div></div></div>"
+			var element = "<div class='stations'><div class='stations-handle'><a class='sortable-handle'>■</a></div><div class='stations-content'><div class='stations-relation'><input type='name' name='stationinmovie_set-" + currentFileCount + "-id_in_part'id='id_stationinmovie_set-" + currentFileCount + "-id_in_part' class='id_in_part'  value='" + currentFileCount + "'><div class='stations-relation-line'></div><select name='stationinmovie_set-" + currentFileCount + "-back_rel' id='id_stationinmovie_set-" + currentFileCount + "-back_rel' class='back_rel'><option value='0'>同一駅</option><option value='1' selected='selected'>つながっている</option><option value='2'>離れている</option></select></div><div class='stations-box'><input type='checkbox' name='postvalue[]' value='" + val + "' class='station_checkbox' checked='checked'><div class='stations-info'><input type='hidden' name='stationinmovie_set-" + currentFileCount + "-station_service_code' id='id_stationinmovie_set-" + currentFileCount + "-station_service_code' class='station_service_code'  value='" + val + "'><div class='station-name-container'><div class='station-name-fixed'>" + name + "</div>歌唱名：<input type='name' name='stationinmovie_set-" + currentFileCount + "-station_sung_name'  value='" + name + "' id='id_stationinmovie_set-" + currentFileCount + "-station_sung_name' class='station_sung_name'></div></div><div class='line-search'><a class='line-search-button'>路線検索</a></div><div class='stations-remarks'>備考<input type='textbox' name='remarks[]' class='stations-remarks-text'></div><div class='stations-delete'><a class='sortable-delete'>削除</a></div></div></div></div>"
 			$('div#file-area').append("<div class'station_form'>" + element + "</div>");
 			$('div.selected-list').append("<div class='station_form'>" + element + "</div>");
 			currentFileCount += 1;
@@ -269,8 +273,8 @@
 			handle: ".sortable-handle",
 			update: function() {
 				$('.station_form').each(function(i, form) {
-					fields = ['id_in_movie', 'movie_part', 'station_service_code', 'station_service_name', 'non_line', 'back_rel']
-					$(form).find('.id_in_movie').val(i);
+					fields = ['id_in_part', 'movie_part', 'station_service_code', 'station_sung_name', 'non_line', 'back_rel']
+					$(form).find('.id_in_part').val(i);
 					$.each(fields,
 						function(index, elem) {
 							$(form).find('.' + elem).attr('name', 'stationinmovie_set-' + i + '-' + elem);
@@ -284,8 +288,8 @@
 		$(document).on('click', '.sortable-delete', function() {
 			$(this).parents(".station_form").remove();
 			$('.station_form').each(function(i, form) {
-				fields = ['id_in_movie', 'movie_part', 'station_service_code', 'station_service_name', 'non_line', 'back_rel']
-				$(form).find('.id_in_movie').val(i);
+				fields = ['id_in_part', 'movie_part', 'station_service_code', 'station_sung_name', 'non_line', 'back_rel']
+				$(form).find('.id_in_part').val(i);
 				$.each(fields,
 					function(index, elem) {
 						$(form).find('.' + elem).attr('name', 'stationinmovie_set-' + i + '-' + elem);

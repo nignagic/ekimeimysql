@@ -18,5 +18,6 @@ from django.urls import path, include
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('ekimeimysql1/', include('ekimeimysql1.urls'), name='ekimeimysql1')
+    path('ekimeimysql1/', include('ekimeimysql1.urls'), name='ekimeimysql1'),
+    # path('datanewsql/', include('datanewsql.urls'), name='datanewsql')
 ]

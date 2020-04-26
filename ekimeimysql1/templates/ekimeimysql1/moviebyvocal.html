@@ -1,0 +1,23 @@
+{% extends 'ekimeimysql1/base.html' %}
+
+{% block title %}動画一覧 - {{ vocal }}{% endblock %}
+
+{% block content %}
+{{ vocal.name }}を含む駅名動画
+<ul>
+	<!-- {% for stations in moviebystationlist %}
+		{{ station_matches.y.line_cd }}
+		{% if stations %}
+			{% for station in stations %}
+			<li><a href="/ekimeimysql1/movie/{{ station.movie.main_id }}/">{{ station.movie }}</a></li>
+			{% endfor %}
+			<br>
+		{% endif %}
+	{% endfor %} -->
+	{% for movie in movies %}
+		<ul>
+			<li><a href="{% url 'ekimeimysql1:detail' movie.youtube_id %}">{{ movie.title }}</a></li>
+		</ul>
+	{% endfor %}
+</ul>
+{% endblock %}

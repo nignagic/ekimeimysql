@@ -2,6 +2,18 @@ from django.forms import Form, ModelForm, inlineformset_factory
 from django import forms
 from .models import Movie, Part, StationInMovie
 
+from django.contrib.auth.forms import (
+	AuthenticationForm
+)
+
+class LoginForm(AuthenticationForm):
+	"""ログインフォーム"""
+	def __init__(self, *args, **kwargs):
+		super().__init__(*args, **kwargs)
+		for field in self.fields.values():
+			field.widget.attrs['class'] = 'form-control'
+			field.widget.attrs['placeholder'] = field.label
+
 class MovieRegisterForm(forms.ModelForm):
 	class Meta:
 		model = Movie
@@ -161,36 +173,39 @@ class StationInMovieEditForm(forms.ModelForm):
 		(1, 'つながっている'),
 		(2, '離れている'),
 	]
-	id_in_movie = forms.IntegerField(
+	id_in_part = forms.IntegerField(
 		label='順番', widget=forms.HiddenInput
 	)
 	back_rel = forms.ChoiceField(
 		label='前駅関係', choices=BACKREL_CHOICES, widget=forms.Select
 	)
-	station_service_name = forms.CharField(
+	station_sung_name = forms.CharField(
 		label='歌唱名', max_length=50
 	)
 	class Meta:
 		model = StationInMovie
-		fields = ('id_in_movie', 'movie_part', 'station_service_code', 'station_service_name', 'non_line', 'back_rel')
+		fields = ('id_in_part', 'movie_part', 'station_service_code', 'station_sung_name', 'non_line', 'back_rel', 'is_sung')
 		widgets = {
-			'id_in_movie': forms.TextInput(attrs={
-				'class': 'id_in_movie',
+			'id_in_part': forms.TextInput(attrs={
+				# 'class': 'id_in_part',
 			}),
 			'movie_part': forms.Select(attrs={
-				'class': 'movie_part',
+				# 'class': 'movie_part',
 			}),
 			'station_service_code': forms.HiddenInput(attrs={
-				'class': 'station_service_code',
+				# 'class': 'station_service_code',
 			}),
-			'station_service_name': forms.TextInput(attrs={
-				'class': 'station_service_name',
+			'station_sung_name': forms.TextInput(attrs={
+				# 'class': 'station_sung_name',
 			}),
 			'non_line': forms.CheckboxInput(attrs={
-				'class': 'non_line',
+				# 'class': 'non_line',
 			}),
 			'back_rel': forms.TextInput(attrs={
-				'class': 'back_rel',
+				# 'class': 'back_rel',
+			}),
+			'is_sung': forms.CheckboxInput(attrs={
+				# 'class': 'is_sung',
 			}),
 		}
 

@@ -29,7 +29,7 @@
 					<p><a href="{% url 'ekimeimysql1:song_list' song.id %}">{{ song }}</a>
 						{% if song.artist %}
 							{% for artist in song.artist.all %}
-							<a href=""> - {{ artist }}</a>
+							 / <a href="">{{ artist }}</a>
 							{% endfor %}
 						{% endif %}
 					</p>
@@ -232,11 +232,11 @@
 							$('.station-list-' + id).append("<h4 class='movie-line-name'>" + data[i].line_service_name + "</h4><ul class='station-ul station-ul-" + forloop + "'></ul>")
 						}
 						if (category == "駅名替え歌") {
-							station_text = data[i].station_service_name + " - " + data[i].line_service_name + "[" +  data[i].pref + "]";
+							station_text = data[i].station_sung_name + " - " + data[i].line_service_name + "[" +  data[i].pref + "]";
 						} else {
-							station_text = data[i].station_service_name;
+							station_text = data[i].station_sung_name;
 						}
-						var station = "<li class='station-name'><a href='http://localhost:8000/ekimeimysql1/station/" + data[i].station_service_code + "'>" + station_text + "</a></li>";
+						var station = "<li class='station-name'><a href='http://localhost:8000/ekimeimysql1/stationservice/" + data[i].station_service_code + "'>" + station_text + "</a></li>";
 						$('.station-ul-' + forloop).append(station)
 						beforeline = line;
 					}

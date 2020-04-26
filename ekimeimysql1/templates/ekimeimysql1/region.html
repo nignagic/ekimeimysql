@@ -1,0 +1,29 @@
+{% extends 'ekimeimysql1/base.html' %}
+
+{% block title %}鉄道から探す{% endblock %}
+
+{% load static %}
+{% block content %}
+<link rel="stylesheet" href="{% static 'ekimeimysql1/company.css' %}">
+
+<div class="main-content">
+	<p>駅名検索</p>
+	<form action="{% url 'ekimeimysql1:stationsearchview' %}" method="get">
+		<input type="text" name="q" value="{{ word }}">
+		<button type="submit">検索</button>
+	</form>
+	<div class="title">地域から探す</div>
+	<h2>日本国内</h2>
+	<ul class="region-ul">
+		{% for region in regions %}
+			<li><a href="{% url 'ekimeimysql1:companylistbyregion' region.pk %}">{{ region }}</a></li>
+		{% endfor %}
+	</ul>
+	<h2>国外</h2>
+	<ul class="country-ul">
+		{% for country in countries %}
+			<li>{{ country }}</li>
+		{% endfor %}
+	</ul>
+</div>
+{% endblock %}

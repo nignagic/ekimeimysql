@@ -19,7 +19,7 @@
 			<div class="company-name">{{ company }}</div>
 			<ul class="line-ul">
 				{% for line in lines %}
-				<li class="line-li"><a href="{% url 'ekimeimysql1:stationservicelistbylineview' line.line_service_code %}">{{ line }}</a></li>
+				<li class="line-li"><a href="{% url 'ekimeimysql1:movielistbylineservice' line.line_service_code %}">{{ line }}</a></li>
 				{% endfor %}
 			</ul>
 		</li>

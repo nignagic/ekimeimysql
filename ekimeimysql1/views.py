@@ -5,7 +5,13 @@ from . import serializer
 from django.urls import reverse_lazy
 from django.shortcuts import get_object_or_404, render, redirect
 
-from .models import Prefecture, Railway_type, Company, Line, Station, LineService, StationService, Category, Creator, YoutubeChannel, Name, Artist, Song, Vocal, Movie, Part, StationInMovie
+from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
+from django.contrib.auth.views import (
+	LoginView, LogoutView
+)
+from .forms import LoginForm
+
+from .models import Railway_type, Country, Region, Prefecture, Company, Line, Station, LineService, StationService, MovieCategory, Creator, YoutubeChannel, Name, Artist, Song, Vocal, Movie, Part, StationInMovie
 from . import forms
 
 import csv
@@ -15,13 +21,156 @@ from io import TextIOWrapper
 class Top(generic.TemplateView):
 	template_name = 'ekimeimysql1/top.html'
 
+class Login(LoginView):
+	"""ログインページ"""
+	form_class = LoginForm
+	template_name = 'ekimeimysql1/login.html'
+
+class Logout(LogoutView):
+	"""ログアウトページ"""
+	template_name = 'ekimeimysql1/top.html'
+
+
+class StationListbyLineView(generic.ListView):
+	model = Line
+	template_name = 'ekimeimysql1/stationlistbyline.html'
+
+	def get_context_data(self, **kwargs):
+		context = super().get_context_data(**kwargs)
+
+		line = Line.objects.get(line_code=self.kwargs['line_code'])
+		stations = Station.objects.filter(line_code=self.kwargs['line_code'])
+		transfers = {}
+		for station in stations:
+			transfers[station] = Station.objects.filter(station_group_code=station.station_group_code).exclude(line_code=line)
+		context = {
+			'line': line,
+			'transfers': transfers
+		}
+		return context
+
+class StationServiceListbyLineView(generic.ListView):
+	model = LineService
+	template_name = 'ekimeimysql1/stationservicelistbyline.html'
+
+	def get_context_data(self, **kwargs):
+		context = super().get_context_data(**kwargs)
+
+		lineservice = LineService.objects.get(line_service_code=self.kwargs['line_service_code'])
+		stationservices = StationService.objects.filter(line_service_code=self.kwargs['line_service_code']).filter(station_code__e_status_old=0).order_by('sort_by_line_service')
+		transfers = {}
+		stationserviceprev = 0
+		for stationservice in stationservices:
+			if stationserviceprev != stationservice.station_code.station_group_code:
+				transfers[stationservice] = {}
+				transferstations = Station.objects.filter(station_group_code=stationservice.station_code.station_group_code)
+				for transferstation in transferstations:
+					transfers[stationservice][transferstation] = StationService.objects.filter(station_code=transferstation.station_code).exclude(line_service_code="110243A").exclude(line_service_code=lineservice)
+					if transfers[stationservice][transferstation].first() is None:
+						del transfers[stationservice][transferstation]
+			stationserviceprev = stationservice.station_code.station_group_code
+		context = {
+			'lineservice': lineservice,
+			'transfers': transfers
+		}
+		return context
+
+class RegionListView(generic.ListView):
+	model = Region
+	template_name = 'ekimeimysql1/region.html'
+
+	def get_context_data(self, **kwargs):
+		regions = Region.objects.all()
+		countries = Country.objects.all()
+
+		context = {
+			'regions': regions,
+			'countries': countries
+		}
+
+		return context
+
+class CompanyListbyRegionView(generic.ListView):
+	model = Company
+	template_name = 'ekimeimysql1/companylistbyregion.html'
+
+	def get_context_data(self, **kwargs):
+		region = Region.objects.get(pk=self.kwargs['pk'])
+		prefs = Prefecture.objects.filter(region=region)
+		companies = Company.objects.none()
+		for pref in prefs:
+			lineservices = LineService.objects.filter(pref_codes=pref)
+			for lineservice in lineservices:
+				companies |= Company.objects.filter(pk=lineservice.company_code.pk)
+
+		context = {
+			'region': region,
+			'prefs': prefs,
+			'companies': companies
+		}
+
+		return context
+
+class LineServiceListbyCompanyView(generic.ListView):
+	model = Company
+	template_name = 'ekimeimysql1/lineservicelistbycompany.html'
+
+	def get_context_data(self, **kwargs):
+		context = super().get_context_data(**kwargs)
+
+		company = Company.objects.get(pk=self.kwargs['pk'])
+		lineservices = LineService.objects.filter(company_code=company).exclude(line_service_code="110243A").order_by('sort_by_company')
+		
+		context = {
+			'company': company,
+			'lineservices': lineservices
+		}
+		return context
+
+class LineServiceListbyPrefectureView(generic.ListView):
+	model = LineService
+	template_name = 'ekimeimysql1/lineservicelistbyprefecture.html'
+
+	def get_context_data(self, **kwargs):
+		pref = Prefecture.objects.get(pk=self.kwargs['pk'])
+		lineservices = LineService.objects.filter(pref_codes=pref)
+
+		context = {
+			'pref': pref,
+			'lineservices': lineservices
+		}
+
+		return context
+
+class StationSearchView(generic.ListView):
+	model = StationService
+	template_name = 'ekimeimysql1/stationsearch.html'
+
+	def get_context_data(self, **kwargs):
+		q_word = self.request.GET.get('q')
+
+		if q_word:
+			stations = StationService.objects.filter(station_name__icontains=q_word).exclude(line_service_code="110243A").exclude(line_service_code="110016A").filter(station_code__e_status_old=0).order_by('line_service_code')
+		count = stations.count()
+		context = {
+			'word': q_word,
+			'stations': stations,
+			'count': count
+		}
+		return context
+
+class NoticeView(generic.TemplateView):
+	template_name = 'ekimeimysql1/notice.html'
+
+
 class MovieListView(generic.ListView):
 	"""動画一覧"""
-	template_name = 'ekimeimysql1/movielist.html'
+	template_name = 'ekimeimysql1/moviebycreator.html'
 	context_object_name = 'latest_movie_list'
 
 	def get_queryset(self):
 		return Movie.objects.all().order_by('channel').order_by('-published_at')
+
 
 class StationServiceListbyLineView(generic.ListView):
 	model = LineService
@@ -49,23 +198,23 @@ class StationServiceListbyLineView(generic.ListView):
 		}
 		return context
 
-class LineServiceListbyCompanyView(generic.ListView):
-	model = Company
-	template_name = 'ekimeimysql1/company.html'
+# class LineServiceListbyCompanyView(generic.ListView):
+# 	model = Company
+# 	template_name = 'ekimeimysql1/company.html'
 
-	def get_context_data(self, **kwargs):
-		context = super().get_context_data(**kwargs)
+# 	def get_context_data(self, **kwargs):
+# 		context = super().get_context_data(**kwargs)
 
-		companies = Company.objects.all()
-		linebycompany = {}
-		for company in companies:
-			linebycompany[company] = LineService.objects.filter(company_code=company).order_by('sort_by_company')
-			if linebycompany[company].first() is None:
-				del linebycompany[company]
-		context = {
-			'linebycompany': linebycompany
-		}
-		return context
+# 		companies = Company.objects.all()
+# 		linebycompany = {}
+# 		for company in companies:
+# 			linebycompany[company] = LineService.objects.filter(company_code=company).order_by('sort_by_company')
+# 			if linebycompany[company].first() is None:
+# 				del linebycompany[company]
+# 		context = {
+# 			'linebycompany': linebycompany
+# 		}
+# 		return context
 
 class StationServiceSearchView(generic.ListView):
 	model = StationService
@@ -84,14 +233,60 @@ class StationServiceSearchView(generic.ListView):
 		}
 		return context
 
-class MovieListbySongView(generic.ListView):
-	model = Song
-	template_name = 'ekimeimysql1/movielistbysong.html'
+class MovieListbyLineServiceView(generic.ListView):
+	model = LineService
+	template_name = 'ekimeimysql1/movielistbylineservice.html'
 
 	def get_context_data(self, **kwargs):
 		context = super().get_context_data(**kwargs)
 
-		parts = Part.objects.filter(song=self.kwargs['id'])
+		lineservice = LineService.objects.get(line_service_code=self.kwargs['line_service_code'])
+		stationservices = StationService.objects.filter(line_service_code=self.kwargs['line_service_code']).order_by('sort_by_line_service')
+		movies = Movie.objects.none()
+		for stationservice in stationservices:
+			stationinmovies = StationInMovie.objects.filter(station_service_code=stationservice)
+			for movie in stationinmovies:
+				movies |= Movie.objects.filter(pk=movie.movie_part.movie.pk)
+		context = {
+			'lineservice': lineservice,
+			'stationservices': stationservices,
+			'movies': movies
+		}
+		return context
+
+class MovieListbyStationServiceView(generic.ListView):
+	model = StationService
+	template_name = 'ekimeimysql1/movielistbystationservice.html'
+
+	def get_context_data(self, **kwargs):
+		context = super().get_context_data(**kwargs)
+
+		stationservice = StationService.objects.get(station_service_code=self.kwargs['station_service_code'])
+		stations = Station.objects.filter(station_group_code=stationservice.station_code.station_group_code)
+		movies = {}
+		for station in stations:
+			movies[station] = {}
+			transfers = StationService.objects.filter(station_code=station.station_code)
+			for transfer in transfers:
+				stationinmovies = StationInMovie.objects.filter(station_service_code=transfer)
+				movielist = []
+				for movie in stationinmovies:
+					movielist.append(movie.movie_part.movie)
+				movies[station][transfer] = movielist
+		context = {
+			'stationservice': stationservice,
+			'movies': movies
+		}
+		return context
+
+class MovieListbySongView(generic.ListView):
+	model = Song
+	template_name = 'ekimeimysql1/moviebysong.html'
+
+	def get_context_data(self, **kwargs):
+		context = super().get_context_data(**kwargs)
+
+		parts = Part.objects.filter(part_song=self.kwargs['id'])
 		movies = []
 		for part in parts:
 			movies.append(part.movie)
@@ -106,35 +301,23 @@ class MovieListbySongView(generic.ListView):
 
 class MovieListbyVocalView(generic.ListView):
 	model = Vocal
-	template_name = 'ekimei1/moviebyvocallist.html'
+	template_name = 'ekimeimysql1/moviebyvocal.html'
 
 	def get_context_data(self, **kwargs):
 		context = super().get_context_data(**kwargs)
 
-		movies = Movie.objects.filter(vocal=self.kwargs['id']).order_by('-published_at')
+		parts = Part.objects.filter(part_vocal=self.kwargs['id'])
+		movies = []
+		for part in parts:
+			movies.append(part.movie)
+		movies_unique_order = sorted(set(movies), key=movies.index)
 
 		vocal = Vocal.objects.get(pk=self.kwargs['id'])
 		context = {
 			'vocal': vocal,
-			'movies': movies
+			'movies': movies_unique_order
 		}
 		return context
-
-def uploadPref(request):
-	if 'csv' in request.FILES:
-		prefectures = []
-		form_data = TextIOWrapper(request.FILES['csv'].file, encoding='utf-8')
-		csv_file = csv.reader(form_data)
-		for line in csv_file:
-			pref_cd = line[0]
-			pref_name = line[1]
-			pref = Prefecture(pref_code=pref_cd, pref_name=pref_name)
-			prefectures.append(pref)
-		Prefecture.objects.bulk_create(prefectures)
-
-		return render(request, 'ekimeimysql1/upload.html')
-	else:
-		return render(request, 'ekimeimysql1/upload.html')
 
 def uploadRailwayType(request):
 	if 'csv' in request.FILES:
@@ -148,6 +331,70 @@ def uploadRailwayType(request):
 			railwaytype = Railway_type(railway_type_code_2=railway_type_code_2, railway_type_code=railway_type_code, railway_type_name=railway_type_name)
 			railwaytypes.append(railwaytype)
 		Railway_type.objects.bulk_create(railwaytypes)
+
+		return render(request, 'ekimeimysql1/upload.html')
+
+	else:
+		return render(request, 'ekimeimysql1/upload.html')
+
+def uploadCountry(request):
+	if 'csv' in request.FILES:
+		countries = []
+		form_data = TextIOWrapper(request.FILES['csv'].file, encoding='utf-8')
+		csv_file = csv.reader(form_data)
+		for line in csv_file:
+			country_code = line[0]
+			country_name = line[1]
+			country = Country(
+				country_code=country_code,
+				country_name=country_name
+			)
+			countries.append(country)
+		Country.objects.bulk_create(countries)
+
+		return render(request, 'ekimeimysql1/upload.html')
+
+	else:
+		return render(request, 'ekimeimysql1/upload.html')
+
+def uploadRegion(request):
+	if 'csv' in request.FILES:
+		regions = []
+		form_data = TextIOWrapper(request.FILES['csv'].file, encoding='utf-8')
+		csv_file = csv.reader(form_data)
+		for line in csv_file:
+			region_code = line[0]
+			region_name = line[1]
+			country = Country.objects.get(country_code=line[2])
+			region = Region(
+				region_code=region_code,
+				region_name=region_name,
+				country=country
+			)
+			regions.append(region)
+		Region.objects.bulk_create(regions)
+
+		return render(request, 'ekimeimysql1/upload.html')
+
+	else:
+		return render(request, 'ekimeimysql1/upload.html')
+
+def uploadPrefecture(request):
+	if 'csv' in request.FILES:
+		prefectures = []
+		form_data = TextIOWrapper(request.FILES['csv'].file, encoding='utf-8')
+		csv_file = csv.reader(form_data)
+		for line in csv_file:
+			pref_code = line[0]
+			pref_name = line[1]
+			region = Region.objects.get(region_code=line[2])
+			prefecture = Prefecture(
+				pref_code=pref_code,
+				pref_name=pref_name,
+				region=region
+			)
+			prefectures.append(prefecture)
+		Prefecture.objects.bulk_create(prefectures)
 
 		return render(request, 'ekimeimysql1/upload.html')
 
@@ -168,7 +415,10 @@ def uploadCompany(request):
 				company_name = line[3]
 				company_name_short = line[4]
 				company_name_short_2 = line[5]
-				company_name_kana =line[6]
+				company_name_kana = line[6]
+				company_color = line[7]
+				area_code = line[8]
+				sort_by_area = line[9]
 				company = Company(
 					railway_type_name=railway_type_name,
 					railway_type_code=railway_type_code,
@@ -176,7 +426,10 @@ def uploadCompany(request):
 					company_name=company_name,
 					company_name_short=company_name_short,
 					company_name_short_2=company_name_short_2,
-					company_name_kana=company_name_kana)
+					company_name_kana=company_name_kana,
+					company_color=company_color,
+					area_code=area_code,
+					sort_by_area=sort_by_area)
 				companies.append(company)
 			else:
 				i+=1
@@ -229,7 +482,6 @@ def uploadLine(request):
 
 	else:
 		return render(request, 'ekimeimysql1/upload.html')
-
 def uploadStation(request):
 	if 'csv' in request.FILES:
 		stations = []
@@ -238,44 +490,45 @@ def uploadStation(request):
 		i = 0
 		for line in csv_file:
 			if i != 0:
-				station_code = line[0]
-				station_group_code = line[1]
-				station_name = line[2]
-				station_name_kana = line[3]
-				station_name_en = line[4]
-				railway_type = line[5]
-				line_name = line[6]
-				line_code = Line.objects.get(line_code=line[7])
-				if line[8] != '':
-					sort_by_line = line[8]
+				station_code = line[2]
+				station_group_code = line[3]
+				station_name = line[6]
+				station_name_kana = line[7]
+				station_name_en = line[8]
+				railway_type = line[9]
+				line_name = line[10]
+				line_code = Line.objects.get(line_code=line[11])
+				if line[12] != '':
+					sort_by_line = line[12]
 				else:
 					sort_by_line = None;
-				if line[9] != '':
-					pref_code = Prefecture.objects.get(pref_code=line[9])
-				else:
-					pref_code = None;
-				post_old = line[10]
-				add_old = line[11]
-				lon_old = line[12]
-				lat_old = line[13]
+				pref_code = Prefecture.objects.get(pref_code=line[14])
 				if line[14] != '':
-					open_ymd_old = line[14]
+					pref_cd_old = line[14]
+				else:
+					pref_cd_old = None;
+				post_old = line[15]
+				add_old = line[16]
+				lon_old = line[17]
+				lat_old = line[18]
+				if line[19] != '':
+					open_ymd_old = line[19]
 				else:
 					open_ymd_old = None;
-				if line[15] != '':
-					close_ymd_old = line[15]
+				if line[20] != '':
+					close_ymd_old = line[20]
 				else:
 					close_ymd_old = None;
-				if line[16] != '':
-					e_status_old = line[16]
+				if line[21] != '':
+					e_status_old = line[21]
 				else:
 					e_status_old = None;
-				if line[17] != '':
-					e_sort_old = line[17]
+				if line[22] != '':
+					e_sort_old = line[22]
 				else:
 					e_sort_old = None;
-				if line[18] != '':
-					sort = line[18]
+				if line[23] != '':
+					sort = line[23]
 				else:
 					sort = None;
 
@@ -288,8 +541,9 @@ def uploadStation(request):
 					railway_type=railway_type,
 					line_name=line_name, 
 					line_code=line_code,
-					sort_by_line=sort_by_line,
 					pref_code=pref_code,
+					sort_by_line=sort_by_line,
+					pref_cd_old=pref_cd_old,
 					post_old=post_old,
 					add_old=add_old,
 					lon_old=lon_old,
@@ -317,18 +571,19 @@ def uploadLineService(request):
 		i = 0
 		for line in csv_file:
 			if i != 0:
-				line_service_code = line[0]
-				line_service_name_formal = line[1]
-				line_service_name_formal_sub = line[2]
+				line_service_code = line[4]
+				line_service_name_formal = line[5]
+				line_service_name_formal_sub = line[6]
 
-				company_name_simple = line[4]
-				is_company_name = line[5]
-				line_service_name = line[6]
-				line_service_name_sub = line[7]
-				company_code = Company.objects.get(company_code=line[8])
-				sort_by_company = line[9]
-				is_formal = line[10]
-				is_service = line[11]
+				company_name_simple = line[7]
+				is_company_name = line[8]
+				line_service_name = line[9]
+				line_service_name_sub = line[10]
+				company_code = Company.objects.get(company_code=line[14])
+				sort_by_company = line[15]
+				line_color = line[16]
+				is_formal = line[17]
+				is_service = line[18]
 				lineservice = LineService(
 					line_service_code=line_service_code,
 					line_service_name_formal=line_service_name_formal,
@@ -341,7 +596,8 @@ def uploadLineService(request):
 					company_code=company_code,
 					sort_by_company=sort_by_company,
 					is_formal=is_formal,
-					is_service=is_service)
+					is_service=is_service,
+					line_color=line_color)
 				lineservices.append(lineservice)
 			else:
 				i+=1
@@ -360,14 +616,17 @@ def uploadStationService(request):
 		i = 0
 		for line in csv_file:
 			if i != 0:
-				station_service_code = line[0]
-				station_code = Station.objects.get(station_code=line[1])
-				station_name = line[2]
-				line_service_name = line[3]
-				line_service_code = LineService.objects.get(line_service_code=line[4])
-				numbering_symbol = line[5]
-				numbering_number = line[6]
-				sort_by_line_service = line[7]
+				station_service_code = line[3]
+				station_code = Station.objects.get(station_code=line[4])
+				station_name = line[5]
+				line_service_name = line[10]
+				line_service_code = LineService.objects.get(line_service_code=line[11])
+				numbering_head = line[12]
+				numbering_symbol = line[13]
+				numbering_middle = line[14]
+				numbering_number = line[15]
+				sort_by_line_service = line[16]
+				station_color = line[17]
 
 				stationservice = StationService(
 					station_service_code=station_service_code,
@@ -375,9 +634,12 @@ def uploadStationService(request):
 					station_name=station_name,
 					line_service_name=line_service_name,
 					line_service_code=line_service_code,
+					numbering_head=numbering_head,
 					numbering_symbol=numbering_symbol,
+					numbering_middle=numbering_middle,
 					numbering_number=numbering_number,
-					sort_by_line_service=sort_by_line_service
+					sort_by_line_service=sort_by_line_service,
+					station_color=station_color
 					)
 				stationservices.append(stationservice)
 			else:
@@ -389,25 +651,26 @@ def uploadStationService(request):
 	else:
 		return render(request, 'ekimeimysql1/upload.html')
 
-def StationDelete(request):
-	Station.objects.all().delete()
+def CompanyDelete(request):
+	Company.objects.all().delete()
 	return render(request, 'ekimeimysql1/upload.html')
 
 def LineDelete(request):
 	Line.objects.all().delete()
 	return render(request, 'ekimeimysql1/upload.html')
 
-def CompanyDelete(request):
-	Company.objects.all().delete()
+def StationDelete(request):
+	Station.objects.all().delete()
+	return render(request, 'ekimeimysql1/upload.html')
+
+def LineServiceDelete(request):
+	LineService.objects.all().delete()
 	return render(request, 'ekimeimysql1/upload.html')
 
 def StationServiceDelete(request):
 	StationService.objects.all().delete()
 	return render(request, 'ekimeimysql1/upload.html')
 
-def LineServiceDelete(request):
-	LineService.objects.all().delete()
-	return render(request, 'ekimeimysql1/upload.html')
 
 def detail_movie(request, main_id):
 	movie = get_object_or_404(Movie, main_id=main_id)
@@ -420,7 +683,14 @@ def detail_movie(request, main_id):
 
 	return render(request, 'ekimeimysql1/detail.html', context)
 
-class MovieRegisterView(generic.CreateView):
+class OnlyYouMixin(UserPassesTestMixin):
+	raise_exception = True
+
+	def test_func(self):
+		user = self.request.user
+		return user.is_superuser
+
+class MovieRegisterView(OnlyYouMixin, generic.CreateView):
 	template_name = 'ekimeimysql1/register.html'
 	model = Movie
 	form_class = forms.MovieRegisterForm
@@ -533,7 +803,7 @@ def lineprefset(request):
 
 	return render(request, 'ekimeimysql1/lineprefset.html')
 
-def lineServiceprefset(request):
+def lineserviceprefset(request):
 	stationservices = StationService.objects.all()
 	for stationservice in stationservices:
 		line = stationservice.line_service_code
@@ -545,7 +815,7 @@ def lineServiceprefset(request):
 class StationServiceViewSet(generics.ListAPIView):
 	serializer_class = serializer.StationServiceSerializer
 	def get_queryset(self):
-		query_my_name = self.kwargs['line_cd']
+		query_my_name = self.kwargs['line_service_code']
 		return StationService.objects.filter(line_service_code=query_my_name)
 
 class LineServiceViewSet(generics.ListAPIView):
@@ -555,20 +825,22 @@ class LineServiceViewSet(generics.ListAPIView):
 		return LineService.objects.filter(pref_codes__pref_code=query_my_name)
 
 class StationServiceSearchViewSet(generics.ListAPIView):
-	serializer_class = serializer.StationSearchSerializer
+	serializer_class = serializer.StationServiceSearchSerializer
 	def get_queryset(self):
 		query_my_name = self.kwargs['words']
-		return StationService.objects.filter(station_name__contains=query_my_name)
+		return StationService.objects.filter(station_service_name__contains=query_my_name)
 
-# class TransferViewSet(generics.ListAPIView):
-# 	serializer_class = serializer.LineSerializer
-# 	def get_queryset(self):
-# 		station = StationService.objects.get(station_code=self.kwargs['station_service_code'])
-# 		stations = StationService.objects.filter(station_group_code=station.station_g_cd)
-# 		lines = []
-# 		for station in stations:
-# 			lines.append(station.line_cd)
-# 		return lines
+class TransferViewSet(generics.ListAPIView):
+	serializer_class = serializer.LineServiceSerializer
+	def get_queryset(self):
+		stationservice = StationService.objects.get(station_service_code=self.kwargs['station_service_code'])
+		stations = Station.objects.filter(station_group_code=stationservice.station_code.station_group_code)
+		lines = []
+		for station in stations:
+			stationservices = StationService.objects.filter(station_code=station)
+			for stationservice in stationservices:
+				lines.append(stationservice.line_service_code)
+		return lines
 
 class PartStationViewSet(generics.ListAPIView):
 	serializer_class = serializer.StationInMovieSerializer

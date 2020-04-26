@@ -1,0 +1,21 @@
+{% extends 'ekimeimysql1/base.html' %}
+
+{% block title %}動画一覧{% endblock %}
+
+{% block content %}
+{% if latest_movie_list %}
+<ul>
+	{% regroup latest_movie_list by channel as movie_list %}
+		{% for channel in movie_list %}
+		<li>{{ channel.grouper }}</li>
+		<ul>
+			{% for movie in channel.list %}
+			<li><a href="{% url 'ekimeimysql1:detail' movie.youtube_id %}">{{ movie.title }}</a></li>
+			{% endfor %}
+		</ul>
+		{% endfor %}
+</ul>
+{% else %}
+<p> No movies are available</p>
+{% endif %}
+{% endblock %}

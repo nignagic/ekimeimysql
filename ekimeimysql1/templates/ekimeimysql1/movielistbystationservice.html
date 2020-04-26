@@ -1,0 +1,37 @@
+{% extends 'ekimeimysql1/base.html' %}
+
+{% block title %}{{ stationservice }}{% endblock %}
+
+{% load static %}
+{% block content %}
+<link rel="stylesheet" href="{% static 'ekimeimysql1/movielistbystationservice.css' %}">
+<div class="main-content">
+	<div class="line-name">{{ stationservice }}</div>
+	<a href="{% url 'ekimeimysql1:lineservicelistbycompanyview' %}">路線一覧へ戻る</a>
+	<ul class="line-ul">
+		<li class="line-li">
+			<div class="station-info" style="border-color: {{ stationservice.get_color }};">
+				<div class="station-name">{{ stationservice }}</div>
+				<div class="station-numbering">{{ stationservice.get_numbering }}</div>
+			</div>
+			<ul class="station-ul">
+				<p>{{ stationservice.station_code.pref_code }}</p>
+			{% for station, transfers in movies.items %}
+				<li class="station-li"><!-- <a href="{% url 'ekimeimysql1:stationlistbylineview' station.line_code.line_code %}"> -->{{ station.line_code }}<!-- </a> --></li>
+				<ul class="service-ul">
+				{% for transfer, moviequery in transfers.items %}
+					<li class="service-li">{{ transfer }} <a href="{% url 'ekimeimysql1:movielistbylineservice' transfer.line_service_code.line_service_code %}">{{ transfer.line_service_code }}</a></li>
+					<ul>
+						{% for movie in moviequery %}
+							<li><a href="{% url 'ekimeimysql1:detail' movie.main_id %}">{{ movie.title }}</a></li>
+						{% endfor %}
+					</ul>
+				{% endfor %}
+				</ul>
+			{% endfor %}
+			</ul>
+		</li>
+	</ul>
+	<small>&copy; 2020 nignagIC</small>
+</div>
+{% endblock %}

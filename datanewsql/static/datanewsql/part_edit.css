@@ -1,0 +1,88 @@
+body {
+	font-family: 游ゴシック体, 'Yu Gothic', YuGothic, 'ヒラギノ角ゴシック Pro', 'Hiragino Kaku Gothic Pro', メイリオ, Meiryo, Osaka, 'ＭＳ Ｐゴシック', 'MS PGothic', sans-serif;
+}
+
+* {
+	box-sizing: border-box;
+	word-wrap: break-word;
+	line-height: 1.5em;
+}
+
+.youtube iframe {
+	width: 400px;
+	height: calc(400px / 16 * 9);
+}
+
+#main {
+	margin: 0;
+	padding: 0;
+	width: 100%;
+}
+
+.part-form {
+	width: 960px;
+	margin-bottom: 8px;
+	border: 1px solid #333;
+	padding: 4px;
+	cursor: pointer;
+}
+
+.part-form:hover {
+	background-color: #ccc;
+	color: white;
+}
+
+.part-form-table {
+	width: 100%;
+	table-layout: fixed;
+	word-break: break-all;
+	word-wrap: break-word;
+}
+
+.part-form-table > tr > td {
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+	padding: 0;
+}
+
+.hidden-field-container {
+	display: none;
+}
+
+.td-part_name_short {
+	width: 5em;
+}
+
+.td-participant {
+	width: 32em;
+}
+
+.td-category {
+	width: 8em;
+}
+
+.modal {
+	display: none;
+	height: 100vh;
+	position: fixed;
+	top: 0;
+	width: 100%;
+}
+
+.modal-bg {
+	background: rgba(0, 0, 0, 0.8);
+	height: 100vh;
+	position: absolute;
+	width: 100%;
+}
+
+.part-modal {
+	background: #fff;
+	left: 50%;
+	padding: 32px;
+	position: absolute;
+	top: 50%;
+	transform: translate(-50%, -50%);
+	width: 64%;
+}

@@ -1,9 +1,10 @@
 from rest_framework import serializers
 from rest_framework.serializers import SerializerMethodField
-from .models import Prefecture, Railway_type, Company, Line, Station, LineService, StationService, Category, Creator, YoutubeChannel, Name, Artist, Song, Vocal, Movie, Part, StationInMovie
 
+from .models import Railway_type, Country, Region, Prefecture, Company, Line, Station, LineService, StationService, MovieCategory, Creator, YoutubeChannel, Name, Artist, Song, Vocal, Movie, Part, StationInMovie
 
 class StationServiceSerializer(serializers.ModelSerializer):
+	line_service_code = serializers.CharField(source='line_service_code.line_service_code')
 	class Meta:
 		model = StationService
 		fields = ('__str__', 'station_service_code', 'line_service_code')
@@ -18,20 +19,19 @@ class LineServiceSerializer(serializers.ModelSerializer):
 # 		model = Line
 # 		fields = ('line_name', 'line_cd')
 
-class StationSearchSerializer(serializers.ModelSerializer):
-	line_service_name = serializers.CharField(source='line_service_code')
+class StationServiceSearchSerializer(serializers.ModelSerializer):
 	class Meta:
 		model = StationService
-		fields = ['__str__', 'station_service_code', 'line_service_name']
+		fields = ['station_name', 'station_service_code', 'line_service_code']
 
 class StationInMovieSerializer(serializers.ModelSerializer):
 	station_group_code = serializers.IntegerField(source='station_service_code.station_code.station_group_code')
 	line_service_code = serializers.CharField(source='station_service_code.line_service_code.line_service_code')
-	line_service_name = serializers.CharField(source='station_service_code.line_service_code.__str__')
-	pref = serializers.CharField(source='station_service_code.station_code.pref_code')
+	line_service_name = serializers.CharField(source='station_service_code.line_service_code')
+	pref = serializers.CharField(source='station_service_code.station_code.pref_code.pref_name')
 	class Meta:
 		model = StationInMovie
-		fields = ['station_group_code', 'station_service_name', 'station_service_code', 'line_service_code', 'line_service_name', 'pref']
+		fields = ['station_sung_name', 'station_service_code', 'station_group_code', 'line_service_code', 'line_service_name', 'pref']
 
 class NameSerializer(serializers.ModelSerializer):
 	class Meta:
