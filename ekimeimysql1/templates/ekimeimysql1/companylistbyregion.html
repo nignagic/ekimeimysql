@@ -4,26 +4,37 @@
 
 {% load static %}
 {% block content %}
-<link rel="stylesheet" href="{% static 'ekimeimysql1/company.css' %}">
+<link rel="stylesheet" href="{% static 'ekimeimysql1/companylistbyregion.css' %}">
+<div class="background">
+	<div class="region-header">
+		<div class="region-header-content">
+			<div class="region-name">{{ region }}</div>
+		</div>
+	</div>
 
-<div class="main-content">
-	<p>駅名検索</p>
-	<form action="{% url 'ekimeimysql1:stationsearchview' %}" method="get">
-		<input type="text" name="q" value="{{ word }}">
-		<button type="submit">検索</button>
-	</form>
-	<div class="title">地域から探す</div>
-	<div>都道府県</div>
-	<ul class="pref-ul">
-		{% for pref in prefs %}
-			<li><a href="{% url 'ekimeimysql1:lineservicelistbyprefecture' pref.pk %}">{{ pref }}</a></li>
-		{% endfor %}
-	</ul>
-	<div>鉄道会社</div>
-	<ul class="company-ul">
-		{% for company in companies %}
-			<li><a href="{% url 'ekimeimysql1:lineservicelistbycompany' company.pk %}">{{ company.company_name_short }}</a></li>
-		{% endfor %}
-	</ul>
+	<div class="main-content">
+		<p>駅名検索</p>
+		<form action="{% url 'ekimeimysql1:stationsearch' %}" method="get">
+			<input type="text" name="q" value="{{ word }}">
+			<button type="submit">検索</button>
+		</form>
+		<div class="main-content-inner">
+			<div class="company-list">
+				<div class="region-list-header">地域から探す</div>
+				<div>都道府県</div>
+				<ul class="pref-ul">
+					{% for pref in prefs %}
+						<li class="pref-li"><a href="{% url 'ekimeimysql1:lineservicelistbyprefecture' pref.pk %}">{{ pref }}</a></li>
+					{% endfor %}
+				</ul>
+				<div>鉄道会社</div>
+				<ul class="company-ul">
+					{% for company in companies %}
+						<li class="company-li"><a href="{% url 'ekimeimysql1:lineservicelistbycompany' company.pk %}">{{ company.company_name_short }}</a></li>
+					{% endfor %}
+				</ul>
+			</div>
+		</div>
+	</div>
 </div>
 {% endblock %}

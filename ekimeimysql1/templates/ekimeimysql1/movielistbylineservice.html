@@ -4,31 +4,88 @@
 
 {% load static %}
 {% block content %}
+<link rel="stylesheet" href="{% static 'ekimeimysql1/movielistbydetail.css' %}">
 <link rel="stylesheet" href="{% static 'ekimeimysql1/movielistbylineservice.css' %}">
-<div class="main-content">
-	<div class="line-name">{{ lineservice }}</div>
-	<a href="{% url 'ekimeimysql1:lineservicelistbycompanyview' %}">路線一覧へ戻る</a>
-	<div class="column">
-		<div class="movie-list">
-			<ul class="movie-ul">
-				{% for movie in movies %}
-				<li><a href="{% url 'ekimeimysql1:detail' movie.main_id %}">{{ movie }}</a></li>
-				{% endfor %}
-			</ul>
-		</div>
-		<div class="station-list">
-			<ul class="line-ul">
+<div class="background">
+	<div class="line-header">
+		<div class="line-header-content">
+			<span class="line-category">路線</span>
+			<!-- <span class="service-category">運行系統</span> -->
+			<div class="line-name">{{ lineservice.with_company }}
+				{% if lineservice.line_service_name_sub %}
+				<small> - {{ lineservice.line_service_name_sub }}</small>
+				{% endif %}
+			</div>
+			<div class="line-name-sub">読み方</div>
+			<div class="line-bar">
+				{{ lineservice.start_station }} ～ {{ lineservice.end_station }} {{ lineservice.f_or_s }}
+			</div>
+			<div class="line-color">
 				{% for stationservice in stationservices %}
-				<li class="line-li">
-					<a href="{% url 'ekimeimysql1:movielistbystationservice' stationservice.station_service_code %}">
-						<div class="station-info" style="border-color: {{ stationservice.get_color }};">
-							<div class="station-name">{{ stationservice }}</div>
-							<div class="station-numbering">{{ stationservice.get_numbering }}</div>
-						</div>
-					</a>
-				</li>
+				<div class="line-color-inner" style="background: {{ stationservice.get_color }};"></div>
 				{% endfor %}
-			</ul>
+			</div>
+			<div class="line-formal">
+				{% for line in lines %}
+				<div>
+					<a href="{% url 'ekimeimysql1:movielistbyline' line.pk %}">{{ line }}</a>
+				</div>
+				{% endfor %}
+			</div>
+			<div class="line-pref">
+				{% for pref in lineservice.pref_codes.all %}
+					<a href="{% url 'ekimeimysql1:lineservicelistbyprefecture' pref.pk %}">{{ pref }}</a>
+					{% if forloop.last %}
+					{% else %}
+						<span>/</span>
+					{% endif %}
+				{% endfor %}
+			</div>
+		</div>
+	</div>
+	<a href="{% url 'ekimeimysql1:railwaytop' %}">路線一覧へ戻る</a>
+
+	<div class="main-content">
+		<div class="main-content-inner">
+			<div class="line-movie-list">
+				{% include 'ekimeimysql1/includes/movielist.html' %}
+			</div>
+			<div class="station-list">
+				<h4 class="station-header">駅一覧</h4>
+				<ul class="line-ul">
+					{% for stationservice in stationservices %}
+						{% if stationservice.prev_group != stationservice.next_group %}
+							{% if stationservice.prev_group == stationservice %}
+							<li class="line-li">
+								<a href="{% url 'ekimeimysql1:movielistbystationservice' stationservice.pk %}">
+									<div class="station-info">
+										<div class="station-prev-color" style="background: {{ stationservice.prev_group.get_color }};"></div>
+										<div class="station-next-color" style="background: {{ stationservice.next_group.get_color }};"></div>
+										<div class="station-name">{{ stationservice }}</div>
+										<div class="station-numbering">{{ stationservice.prev_group.get_numbering }}
+										{% if stationservice.prev_group.get_numbering != stationservice.next_group.get_numbering %}
+										 / {{ stationservice.next_group.get_numbering }}
+										 {% endif %}
+										</div>
+									</div>
+								</a>
+							</li>
+							{% endif %}
+						{% else %}
+							<li class="line-li">
+								<a href="{% url 'ekimeimysql1:movielistbystationservice' stationservice.pk %}">
+									<div class="station-info">
+										<div class="station-prev-color" style="background: {{ stationservice.prev_group.get_color }};"></div>
+										<div class="station-next-color" style="background: {{ stationservice.next_group.get_color }};"></div>
+										<div class="station-name">{{ stationservice }}</div>
+										<div class="station-numbering">{{ stationservice.prev_group.get_numbering }}</div>
+									</div>
+								</a>
+							</li>
+						{% endif %}
+					{% endfor %}
+				</ul>
+			</div>
 		</div>
 	</div>
 	<small>&copy; 2020 nignagIC</small>

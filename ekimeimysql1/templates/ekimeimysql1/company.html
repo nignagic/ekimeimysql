@@ -8,7 +8,7 @@
 
 <div class="main-content">
 	<p>駅名検索</p>
-	<form action="{% url 'ekimeimysql1:stationsearchview' %}" method="get">
+	<form action="{% url 'ekimeimysql1:stationsearch' %}" method="get">
 		<input type="text" name="q" value="{{ word }}">
 		<button type="submit">検索</button>
 	</form>
@@ -19,7 +19,7 @@
 			<div class="company-name">{{ company }}</div>
 			<ul class="line-ul">
 				{% for line in lines %}
-				<li class="line-li"><a href="{% url 'ekimeimysql1:movielistbylineservice' line.line_service_code %}">{{ line }}</a></li>
+				<li class="line-li"><a href="{% url 'ekimeimysql1:movielistbylineservice' line.line_service %}">{{ line }}</a></li>
 				{% endfor %}
 			</ul>
 		</li>

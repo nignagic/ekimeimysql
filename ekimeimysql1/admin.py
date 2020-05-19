@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Railway_type, Country, Region, Prefecture, Company, Line, Station, LineService, StationService, MovieCategory, Creator, YoutubeChannel, Name, Artist, Song, Vocal, Movie, Part, StationInMovie
+from .models import Railway_type, Country, Region, Prefecture, Company, BelongsCategory, NameCategory, Line, Station, LineService, StationService, MovieCategory, Creator, YoutubeChannel, Name, Artist, Song, Vocal, Movie, Part, StationInMovie, LineInMovie
 
 # Register your models here.
 
@@ -34,3 +34,5 @@ admin.site.register(Vocal)
 admin.site.register(Movie)
 admin.site.register(Part)
 admin.site.register(StationInMovie)
+admin.site.register(LineInMovie)
+admin.site.register(BelongsCategory)

@@ -60,6 +60,12 @@
   <button type="submit" class="btn" name="button">駅名(運行系統)アップロード</button>
 </form>
 
+<form action="{% url 'ekimeimysql1:stationservicegroupcodeset' %}" method="post" enctype="multipart/form-data">
+  {% csrf_token %}
+  <input type="file" class="dropify" data-default-file="ファイルを選択してください" name="csv">
+  <button type="submit" class="btn" name="button">駅名グループコード(運行系統)セット</button>
+</form>
+
 <a href="{% url 'ekimeimysql1:StationDelete' %}">駅全削除</a>
 <a href="{% url 'ekimeimysql1:LineDelete' %}">路線全削除</a>
 <a href="{% url 'ekimeimysql1:CompanyDelete' %}">事業者全削除</a>
@@ -70,5 +76,9 @@ $(function(){
   $('.dropify').dropify();
 })
 </script>
+
+<div>
+  <a href="{% url 'ekimeimysql1:stationserviceexport' %}">駅(運行系統)エクスポート</a>
+</div>
   <small>&copy; 2020 nignagIC</small>
 </body>

@@ -1,0 +1,37 @@
+{% extends 'ekimeimysql1/base.html' %}
+
+{% block title %}ボーカル一覧{% endblock %}
+
+{% load static %}
+{% block content %}
+<link rel="stylesheet" href="{% static 'ekimeimysql1/vocallist.css' %}">
+<div class="background">
+	<div class="vocal-header">
+		<div class="vocal-header-content">
+			<div class="vocal-name">ボーカル一覧</div>
+			<div class="vocal-bar">
+			</div>
+		</div>
+	</div>
+
+	<div class="main-content">
+		<div class="main-content-inner">
+			<div class="vocal-list">
+				<h4 class="vocal-list-header">ボーカル一覧</h4>
+				{% regroup vocals by initial as vocal_group %}
+				{% for key in vocal_group %}
+				<h5>{{ key.grouper }}
+				<ul class="vocal-ul">
+					{% for vocal in key.list %}
+						<li class="vocal-li">
+							<a href="{% url 'ekimeimysql1:movielistbyvocal' vocal.pk %}">{{ vocal }}</a>
+						</li>
+					{% endfor %}
+				</ul>
+				{% endfor %}
+			</div>
+		</div>
+	</div>
+	<small>&copy; 2020 nignagIC</small>
+</div>
+{% endblock %}

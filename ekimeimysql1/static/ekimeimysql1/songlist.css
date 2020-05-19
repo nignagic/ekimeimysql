@@ -1,0 +1,115 @@
+body {
+	font-family: "游ゴシック Medium", "Yu Gothic Medium", "游ゴシック体", YuGothic, "Noto Sans Japanese", Meiryo, メイリオ, "Hiragino Kaku Gothic ProN", "ヒラギノ角ゴ ProN W3", sans-serif;
+	margin: 0;
+	padding: 0;
+	color: #000;
+	font-size: 16px;
+	font-style: normal;
+	font-weight: 700;
+	line-height: 1;
+	letter-spacing: calc(33em / 1000);
+}
+
+* {
+	box-sizing: border-box;
+	word-wrap: break-word;
+	line-height: 1.5em;
+	margin: 0;
+	/*padding: 0;*/
+}
+
+a {
+	text-decoration: none;
+	color: #027181;
+}
+
+a:hover {
+	color: #1cb1c4;
+}
+
+a. button {
+	color: inherit;
+	font-weight: inherit;
+	cursor: pointer;
+}
+
+h1, h2, h3, h4, h5, h6 {
+	font-size: 100%;
+	font-weight: inherit;
+	line-height: inherit;
+}
+
+ul, li {
+	list-style: none;
+}
+
+.background {
+	background: #f0f0f0;
+}
+
+.song-header {
+	min-height: 256px;
+	padding: 64px 0;
+	width: 100%;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	text-align: center;
+	filter: drop-shadow(2px 2px 4px rgba(0, 0, 0, 0.6));
+}
+
+.song-header-content {
+	width: 100%;
+}
+
+.song-title {
+	font-size: 2.0em;
+}
+
+.song-bar {
+	margin: 16px 0 16px 0;
+	padding: 4px 0;
+	background: #c80;
+	color: #fff;
+}
+
+.main-content {
+	background: #fff;
+	padding: 32px;
+	box-shadow: 0 -2px 6px rgba(0,0,0,0.6);
+	display: flex;
+}
+
+.main-content-inner {
+	display: flex;
+	margin: 0 auto;
+	max-width: 1280px;
+	width: 100%;
+}
+
+.song-list {
+	width: 64%;
+}
+
+.song-list-header {
+	font-size: 1.4em;
+	margin: 0 0 16px 0;	
+}
+
+.song-table {
+	width: 100%;
+	font-size: 1em;
+}
+
+.song-table tr td {
+	padding: 4px;
+}
+
+.song-name {
+	min-width: 50%;
+	border-bottom: 1px solid #ddd;
+}
+
+.artist-name {
+	border-bottom: 1px solid #ddd;
+}

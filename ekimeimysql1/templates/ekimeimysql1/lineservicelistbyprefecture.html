@@ -4,18 +4,31 @@
 
 {% load static %}
 {% block content %}
-<link rel="stylesheet" href="{% static 'ekimeimysql1/company.css' %}">
+<link rel="stylesheet" href="{% static 'ekimeimysql1/lineservicelistbyprefecture.css' %}">
+<div class="background">
+	<div class="pref-header">
+		<div class="pref-header-content">
+			<div class="pref-title">{{ pref }}</div>
+			<div class="pref-bar">
+			</div>
+		</div>
+	</div>
 
-<div class="main-content">
-	<ul class="company-ul">
-		<li class="company-li">
-			<div class="company-name">{{ pref }}</div>
-			<ul class="line-ul">
-				{% for line in lineservices %}
-				<li class="line-li"><a href="{% url 'ekimeimysql1:movielistbylineservice' line.line_service_code %}">{{ line }}</a></li>
-				{% endfor %}
-			</ul>
-		</li>
-	</ul>
+	<div class="main-content">
+		<div class="main-content-inner">
+			<div class="line-list">
+				<!-- <h4 class="line-list-header">楽曲一覧</h4> -->
+				<div class="line-list-content">
+					<table class="line-table">
+						{% for lineservice in lineservices %}
+							<tr>
+								<td class="line-name"><a href="{% url 'ekimeimysql1:movielistbylineservice' lineservice.id %}">{{ lineservice }}</a></td>
+							</tr>
+						{% endfor %}
+					</table>
+				</div>
+			</div>
+		</div>
+	</div>
 </div>
 {% endblock %}

@@ -1,7 +1,8 @@
 {% extends 'ekimeimysql1/base.html' %}
 {% load widget_tweaks %}
+{% load tags %}
 
-{% block title %}パート編集 - {{ movie }}{% endblock %}
+{% block title %}動画・パート情報編集 - {{ movie }}{% endblock %}
 
 {% load static %}
 {% block content %}
@@ -9,206 +10,255 @@
 <link rel="stylesheet" href="//code.jquery.com/ui/1.11.4/themes/smoothness/jquery-ui.css" />
 <script src="//code.jquery.com/jquery-1.10.2.js"></script>
 <script src="//code.jquery.com/ui/1.11.4/jquery-ui.js"></script>
-<h2>パート情報編集</h2>
-<form action="" method="post" enctype="multipart/form-data">
-{{ form.as_p }}
-<div class="youtube-frame">
-	<div class="youtube-container">
-		<div class="youtube">
-			<iframe src="https://www.youtube.com/embed/{{ movie.main_id }}"  frameborder='0' gesture='media' allowfullscreen></iframe>
-		</div>
-	</div>
-</div>
+
+
 <form name="part_add" method="post">
-	<h3>パート</h3>
-	<div class="part-list">
-		{{ formset.management_form }}
-		{% for form in formset %}
-		{% if form.errors %}
-			{{ form.non_field_errors }}
-		{% endif %}
-		<div class="part-form">
-			<div class="part-form-content">
-				{{ form.ORDER }}
-				{{ form.DELETE }}
-				<table class="part-form-table">
-					<tr>
-						{{ form.non_field_errors }}
-						{{ form.id }}
-						{{ form.part_num }}{% if form.part_num.value %}{{ form.part_num.value }}{% endif %}
-						{{ form.movie }}
-						<div class="hidden-field-container">
-							{{ form.participant }}
-							{{ form.category }}
-							{{ form.part_song }}
-							{{ form.part_vocal }}
-						</div>
-						{{ form.part_name_short }}
-						<td class="td-part_name_short" rowspan="2">{% if form.part_name_short.value %}{{ form.part_name_short.value }}{% endif %}</td>
-						<td class="td-participant"></td>
-						{{ form.part_name }}
-						<td class="td-part_name">{% if form.part_name.value %}{{ form.part_name.value }}{% endif %}</td>
-						<td class="td-category"></td>
-					</tr>
-					<tr>
-						<td class="td-part_song"></td>
-						<td class="td-part_vocal"></td>
-						{{ form.start_time }}
-						<td class="td-start_time">{% if form.start_time.value %}{{ form.start_time.value }}{% endif %}</td>
-					</tr>
-				</table>
-				<p class="td-explanation">
-				{{ form.explanation }}{% if form.explanation.value %}{{ form.explanation.value }}{% endif %}
-				</p>
+<div class="background" style="background: url(https://i.ytimg.com/vi/{{ movie.youtube_id }}/hqdefault.jpg) no-repeat center; background-size: cover; background-attachment: fixed;">
+	<p><a href="{% url 'ekimeimysql1:list' %}">リストへ戻る</a></p>
+	<h2>パート情報編集</h2>
+	<div class="main-container">
+		<div class="movie-detail">
+			<div class="youtube-container">
+				<div class="youtube">
+					<div id="player"></div>
+					<script>
+						var tag = document.createElement('script');
+
+						tag.src = "https://www.youtube.com/iframe_api";
+						var firstScriptTag = document.getElementsByTagName('script')[0];
+						firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
+
+						var player;
+						function onYouTubeIframeAPIReady() {
+							player = new YT.Player('player', {
+								    videoId: '{{ movie.youtube_id }}',
+							})
+						}
+
+						$(document).on('click', '.time-set', function() {
+							t = parseInt(player.getCurrentTime())
+							$(this).prev('.start_time').val(inttosecond(t))
+						})
+						function inttosecond(t) {
+							s = (t % 60) % 60
+							if (s < 10) s = "0" + s
+							m = Math.floor(t / 60) % 60
+							if (m < 10) m = "0" + m
+							h = Math.floor(t / 3600)
+							if (h < 10) h + "0" + h
+							return h + ":" + m + ":" + s
+						}
+					</script>
+				</div>
 			</div>
+			<div class="detail-original">
+				<a href="https://www.youtube.com/watch?v={{ movie.youtube_id }}" target="_blank" class="movie-title-link"><h2 class="movie-title">{{ movie.title }}</h2></a>
+				{{ form.title }}
+				{{ form.main_id }}
+				{{ form.youtube_id }}
+				{{ form.niconico_id }}
+				{{ form.published_at }}
+				{{ form.duration }}
+				{{ form.n_view }}
+				{{ form.n_like }}
+				{{ form.n_dislike }}
+				{{ form.n_comment }}
+				{{ form.description }}
+				{{ form.reg_date }}
+				<div class="movie-channel">
+					<div class="movie-channel-img">
+						<img src="url">
+					</div>
+					<div class="movie-channel-name">{{ movie.channel }}</div>
+				</div>
+				{{ form.channel }}
+				<h3 class="detail-header">投稿日時</h3>
+				<div class="detail-content">
+					{% load tz %}
+					<p class="movie-published-jpn">{{ movie.published_at|timezone:'Asia/Tokyo'|date:"Y年n月d日 H:i:s" }} <small>(日本時間)</small></p>
+				</div>
+			</div>
+			<div class="detail-addition">
+				<h3 class="detail-header">使用楽曲(全体)</h3>
+				<div class="detail-content">
+					{{ form.song }}
+		<a href="javascript:void(0);" onclick="window.open('{% url 'ekimeimysql1:popup_song_create' %}', 'subwin', 'width=500,height=500');">+Song</a>
+				</div>
+				<h3 class="detail-header">親作品</h3>
+				<div class="detail-content">
+					{{ form.parent }}
+				</div>
+				<h3 class="detail-header">補足説明</h3>
+				<div class="detail-content">
+					{{ form.explanation }}
+				</div>
+			</div>
+			{{ form.is_collab }}
 		</div>
+		<div class="movie-part-list">
+			<h3>パート編集</h3>
+			{{ formset.management_form }}
+			<div class="part-container">
+			{% for form in formset %}
+				<div class="part-header">
+					<div class="part-handle">
+						<a class="sortable-handle">■</a>
+					</div>
+					{{ form.id }}
+					{{ form.part_num }}
+					{{ form.movie }}
+					{{ form.participant }}
+					{{ form.part_song }}
+					{{ form.explanation }}
+					<div class="part-name-short">
+						番号<br>{{ form.part_name_short }}
+						<div class="name-short-error">{{ form.part_name_short.errors }}</div>
+					</div>
+					<div class="part-name">
+						路線説明またはパート名{{ form.part_name }}<br>
+						開始位置{{ form.start_time }}<input type="button" class="time-set" value="現在位置に指定"><br>種類{{ form.category }}
+						<div class="name-error">{{ form.part_name.errors }}</div>
+						<div class="part-start-time">
+							<p><span class="participant-list"></span>
+							<span class="part-song-list"> - </span></p>
+						</div>
+					</div>
+					<div class="detail-link">
+						{% if form.part_num.value != None and form.part_name_short.value %}
+						<div class="station-button">
+							<a href="{% url 'ekimeimysql1:station_edit' movie.main_id form.part_num.value %}">駅情報<br>編集</a>
+						</div>
+						{% else %}
+						<div class="delete-button">
+							<a class="delete-text">削除</a>
+						</div>
+						{% endif %}
+					</div>
+				</div>
+			{% if form.errors %}
+				{{ form.non_field_errors }}
+			{% endif %}
 		{% for field, errors in form.errors.items %}
 			{% for error in errors %}
-				{{ field }}{{ error }}
+				<p>{{ field }}{{ error }}</p>
 			{% endfor %}
 		{% endfor %}
-		{% endfor %}
-	</div>
-	<input type="button" class="part-add" value="パート追加">
-	{% csrf_token %}
-	<button type="button" onclick="submit();" class="btn btn-primary">送信</button>
-</form>
-</form>
-<div class="modal">
-	<div class="modal-bg"></div>
-	<div class="part-modal">
-		<div class="part-modal-content">
+			{% endfor %}
+			</div>
 		</div>
-		<a href="javascript:void(0);" onclick="window.open('{% url 'ekimeimysql1:popup_song_create' %}', 'subwin', 'width=500,height=500');">+Song</a>
-		<a href="javascript:void(0);" onclick="window.open('{% url 'ekimeimysql1:popup_vocal_create' %}', 'subwin', 'width=500,height=500');">+Vocal</a>
-		<a class="modal-close">閉じる</a>
-		<a class="modal-save">保存</a>
+	</div>
+	<div class="submit-button">
+		<input type="button" class="part-add" value="パート追加">
+		<input type="button" class="single-part-add" value="単一パート作品として登録(自動設定)">
+		<input type="hidden" name="single-part-boolean" id="single-part-boolean" value="false">
+		{% csrf_token %}
+		<div style="display: none;">
+			{% for name in names %}
+			<div class="name-list" value="{{ name.id }}">{{ name }}</div>
+			{% endfor %}
+		</div>
+		<div style="display: none;">
+			{% for song in songs %}
+			<div class="song-list" value="{{ song.id }}">{{ song }}</div>
+			{% endfor %}
+		</div>
+		<button type="button" onclick="submit();" class="btn btn-primary">送信</button>
 	</div>
 </div>
+</form>
 {% endblock %}
 
 {% block extrajs %}
 <link rel="stylesheet" href="//code.jquery.com/ui/1.11.4/themes/smoothness/jquery-ui.css" />
 <script src="//code.jquery.com/jquery-1.10.2.js"></script>
 <script src="//code.jquery.com/ui/1.11.4/jquery-ui.js"></script>
+
 <script>
-	function add_song(name, pk) {
-		var select = $('.part-modal-content').children('select.part_song')[0];
-		var option = document.createElement('option');
-		option.setAttribute('value', pk);
-		option.innerHTML = name;
+$(function() {
+	$('.part-container').html(
+		$('.part-header').sort(function(a, b) {
+			return parseInt($(a).children('.part_num').val(), 10) - parseInt($(b).children('.part_num').val(), 10)
+		})
+	)
 
-		select.add(option, 0);
-		select.options[0].selected = true;
-	}
-
-	function add_vocal(name, pk) {
-		var select = $('.part-modal-content').children('select.part_vocal')[0];
-		var option = document.createElement('option');
-		option.setAttribute('value', pk);
-		option.innerHTML = name;
-
-		select.add(option, 0);
-		select.options[0].selected = true;
-	}
-
-	$(function() {
-		var totalManageElement = $('input#id_part_set-TOTAL_FORMS');
-		var initialManageElement = $('input#id_part_set-INITIAL_FORMS');
-		// initialManageElement.val(0);
-
-		$(document).on('click', '.part-add', function() {
-			part_add();
+	$('.part-header').each(function() {
+		t = $(this)
+		$(this).children('.participant').each(function(i, elem) {
+			pv = $(elem).val();
+			pn = $('.name-list[value=' + pv + ']').text();
+			t.find('.participant-list').append(pn);
 		})
 
-		function part_add() {
-			var currentFileCount = 0;
-			$('.part-form').each(function() {
-				currentFileCount++;
-			})
-			var element = "a";
-			$('.part-list').append(element);
-			currentFileCount += 1;
-			totalManageElement.attr('value', currentFileCount);
-		}
-
-		$(document).on('click', '.part-form', function() {
-			part_edit(this);
-		})
-
-		fields = ['part_num', 'part_name_short', 'part_name', 'participant', 'category', 'start_time', 'part_song', 'part_vocal', 'explanation']
-		fields_name = ['', 'パート番号', 'パート名', '参加名義', 'カテゴリー', '開始時間', '曲(パート)', 'ボーカル(パート)', '補足説明']
-
-		$('.part-form').each(function(index, form) {
-			$.each(fields,
-				function(i, elem) {
-					if (elem == 'participant' || elem == 'part_song' || elem == 'part_vocal' || elem == 'category'){
-						selectbox_text = "";
-						selectbox_selected = $(form).find('.' + elem).children(':selected')
-						len = selectbox_selected.length;
-						selectbox_selected.each(function(i, elem) {
-							selectbox_text += $(elem).text()
-							if (i != len - 1) selectbox_text += "、";
-						})
-						$(form).find('.td-' + elem).text(selectbox_text);
-					}
-				})
-		})
-
-		function part_edit(part) {
-			part_index = $('div.part-form').index(part);
-			console.log(part_index);
-			$('.part-modal-content').empty()
-			$.each(fields,
-				function(index, elem) {
-					fields_value = $(part).find('.' + elem).attr("value");
-					if (fields_value == undefined) fields_value = "";
-					if (elem == 'participant' || elem == 'part_song' || elem == 'part_vocal' || elem == 'category'){
-						selectbox = $(part).find('.' + elem);
-						selectbox_value = selectbox.val()
-						selectbox_clone = selectbox.clone().val(selectbox_value);
-						$('.part-modal-content').append(selectbox_clone);
-					} else {
-						context = "<div class='field-" + elem + "'><label class='label-" + elem + "'>" + fields_name[index] + "</label><input type='text' class='input-" + elem + "' value='" + fields_value + "'></div>"
-						$('.part-modal-content').append(context);
-					}
-				}
-			)
-			$('.part-modal-content').append("<div class='part_index'>" + part_index + "</div>");
-			$('.modal').fadeIn();
-		}
-
-		$(document).on('click', '.modal-close', function() {
-			$('.modal').fadeOut();
-		})
-		$(document).on('click', '.modal-bg', function() {
-			$('.modal').fadeOut();
-		})
-
-		$(document).on('click', '.modal-save', function() {
-			part_index = $('.part_index').text();
-			context = "";
-			$('div.part-form').eq(part_index).find('.hidden-field-container').empty();
-			$.each(fields,
-				function(index, elem) {
-					if (elem == 'participant' || elem == 'part_song' || elem == 'part_vocal' || elem == 'category'){
-						selectbox = $('.part-modal-content').find('.' + elem);
-						selectbox_value = selectbox.val()
-						selectbox_clone = selectbox.clone().val(selectbox_value);
-						$('div.part-form').eq(part_index).find('.hidden-field-container').append(selectbox_clone)
-
-						selectbox_text = $(selectbox).children(':selected').text();
-						$('div.part-form').eq(part_index).find('.td-' + elem).text(selectbox_text);
-					} else {
-						fields_value = $('.part-modal-content').find('.input-' + elem).val();
-						hiddeninput = $('input#id_part_set-' + part_index + '-' + elem);
-						hiddeninput.val(fields_value);
-						$('div.part-form').eq(part_index).find('.td-' + elem ).text(fields_value)
-					}
-				}
-			)
-			return false;
+		$(this).children('.part_song').each(function(i, elem) {
+			sv = $(elem).val();
+			sn = $('.song-list[value=' + sv + ']').text();
+			t.find('.part-song-list').append(sn);
 		})
 	})
+
+	$('div.part-container').sortable({
+		handle: ".sortable-handle",
+		update: function() {
+			$('.part-header').each(function(i, form) {
+				$(form).find('.part_num').val(i);
+			})
+		}
+	})
+
+	var totalManageElement = $('input#id_part_set-TOTAL_FORMS');
+	var currentFileCount = parseInt(totalManageElement.val());
+	$('.part-add').on('click', function(){
+		// p = "<div class='part-header'><div class='part-handle'><a class='sortable-handle'>■</a></div><input type='hidden' name='part_set-" + currentFileCount + "-id' id='id_part_set-" + currentFileCount + "-id'><input type='hidden' name='part_set-" + currentFileCount + "-part_num' class='part_num' id='id_part_set-" + currentFileCount + "-part_num'><input type='hidden' name='part_set-" + currentFileCount + "-part_name' class='part_name' id='id_part_set-" + currentFileCount + "-part_name'><input type='hidden' name='part_set-" + currentFileCount + "-movie' value='{{ movie.main_id }}' id='id_part_set-" + currentFileCount + "-movie'><input type='hidden' name='part_set-" + currentFileCount + "-category' class='category' id='id_part_set-" + currentFileCount + "-category'><input type='hidden' name='part_set-" + currentFileCount + "-explanation' class='explanation' id='id_part_set-" + currentFileCount + "-explanation'><div class='part-name-short'>パート番号<input type='text' name='part_set-" + currentFileCount + "-part_name_short' class='part_name_short' maxlength='5' id='id_part_set-" + currentFileCount + "-part_name_short'><div class='name-short-error'></div><p class='participant-list'></p></div><div class='part-start-time'>開始位置<input type='text' name='part_set-" + currentFileCount + "-start_time' class='start_time' id='id_part_set-" + currentFileCount + "-start_time'><p class='part-song-list'></p></div><div class='detail-link'><div class='delete-button'><a class='delete-text'>削除</a></div></div></div>"
+
+		p = "<div class='part-header'><div class='part-handle'><a class='sortable-handle'>■</a></div><input type='hidden' name='part_set-" + currentFileCount + "-id' id='id_part_set-" + currentFileCount + "-id'><input type='hidden' name='part_set-" + currentFileCount + "-part_num' value='' class='part_num' id='id_part_set-" + currentFileCount + "-part_num'><input type='hidden' name='part_set-" + currentFileCount + "-movie' value='{{ movie.main_id }}' id='id_part_set-" + currentFileCount + "-movie'><input type='hidden' name='part_set-" + currentFileCount + "-explanation' class='explanation' id='id_part_set-" + currentFileCount + "-explanation'><div class='part-name-short'>番号<br><input type='text' name='part_set-" + currentFileCount + "-part_name_short' value='' class='part_name_short' maxlength='5' id='id_part_set-" + currentFileCount + "-part_name_short'><div class='name-short-error'></div></div><div class='part-name'>路線説明またはパート名<input type='text' name='part_set-" + currentFileCount + "-part_name' value='' class='part_name' maxlength='200' id='id_part_set-" + currentFileCount + "-part_name'><br>開始位置<input type='text' name='part_set-" + currentFileCount + "-start_time' value='' class='start_time' id='id_part_set-" + currentFileCount + "-start_time'><input type='button' class='time-set' value='現在位置に指定'><br>種類<select name='part_set-" + currentFileCount + "-category' class='category' id='id_part_set-" + currentFileCount + "-category'><option value=''>---------</option><option value='1' selected>駅名記憶</option><option value='2'>駅名替え歌</option></select><div class='name-error'></div><div class='part-start-time'><p><span class='participant-list'></span><span class='part-song-list'> - </span></p></div></div><div class='detail-link'><div class='delete-button'><a class='delete-text'>削除</a></div></div></div>"
+		
+		$('.part-container').append(p);
+
+		$('.part-header').each(function(i, form) {
+			$(form).find('.part_num').val(i);
+		})
+
+		currentFileCount += 1;
+		totalManageElement.attr('value', currentFileCount);
+	});
+
+	$(document).on('click', '.delete-button', function() {
+		$(this).parents(".part-header").remove();
+
+		$('.part-header').each(function(i, form) {
+			$(form).find('.part_num').val(i);
+		})
+
+		currentFileCount -= 1;
+		totalManageElement.attr('value', currentFileCount);
+		$('#single-part-boolean').val(false)
+	})
+
+	$('.single-part-add').on('click', function() {
+		if (currentFileCount == 0) {
+			p = "<div class='part-header'><div class='part-handle'><a class='sortable-handle'>■</a></div><input type='hidden' name='part_set-" + currentFileCount + "-id' id='id_part_set-" + currentFileCount + "-id'><input type='hidden' name='part_set-" + currentFileCount + "-part_num' value='' class='part_num' id='id_part_set-" + currentFileCount + "-part_num'><input type='hidden' name='part_set-" + currentFileCount + "-movie' value='{{ movie.main_id }}' id='id_part_set-" + currentFileCount + "-movie'><input type='hidden' name='part_set-" + currentFileCount + "-explanation' class='explanation' id='id_part_set-" + currentFileCount + "-explanation'><div class='part-name-short'>番号<br><input type='text' name='part_set-" + currentFileCount + "-part_name_short' value='1' class='part_name_short' maxlength='5' id='id_part_set-" + currentFileCount + "-part_name_short'><div class='name-short-error'></div></div><div class='part-name'>開始位置<input type='text' name='part_set-" + currentFileCount + "-start_time' value='0:00:00' class='start_time' id='id_part_set-" + currentFileCount + "-start_time'><input type='button' class='time-set' value='現在位置に指定'><br>種類<select name='part_set-" + currentFileCount + "-category' class='category' id='id_part_set-" + currentFileCount + "-category'><option value=''>---------</option><option value='1' selected>駅名記憶</option><option value='2'>駅名替え歌</option></select><div class='name-error'></div></div><div class='detail-link'><div class='delete-button'><a class='delete-text'>削除</a></div></div></div>"
+
+			$('.part-container').append(p);
+
+			$('.part-header').each(function(i, form) {
+				$(form).find('.part_num').val(i);
+			})
+
+			currentFileCount += 1;
+			totalManageElement.attr('value', currentFileCount);
+			$('#single-part-boolean').val(true)
+		}
+	})
+})
+
+function add_song(name, pk) {
+	var select = document.getElementById('id_song');
+	var option = document.createElement('option');
+	option.setAttribute('value', pk);
+	option.innerHTML = name;
+
+	select.add(option, 0);
+	select.options[0].selected = true;
+}
 </script>
 {% endblock %}

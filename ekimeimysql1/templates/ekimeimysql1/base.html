@@ -9,29 +9,37 @@
 	<!-- Bootstrap CSS -->
 	<!-- <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/css/bootstrap.min.css" integrity="sha384-GJzZqFGwb1QTTN6wy59ffF1BuGJpLSa9DkKMp0DgiMDm4iYMj70gZWKYbI706tWS" crossorigin="anonymous"> -->
 	<link href="https://fonts.googleapis.com/earlyaccess/notosansjapanese.css" rel="stylesheet" />
+	<link rel="stylesheet" href="{% static 'ekimeimysql1/base.css' %}">
+
 
 	<title>{% block title %}{% endblock %}</title>
+	
 </head>
 <body>
-	<nav class="navbar navbar-expand-lg navbar-light bg-light">
-		<a class="navbar-brand" href="{% url 'ekimeimysql1:top' %}">駅名動画データベース</a>
-		<button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-			<span class="navbar-toggler-icon"></span>
-		</button>
-
-		<div class="collapse navbar-collapse" id="navbarSupportedContent">
-			<ul class="navbar-nav mr-auto">
-				{% if user.is_authenticated %}
-				<li>
-					<a class="nav-item nav-link" href="{% url 'ekimeimysql1:logout' %}">ログアウト</a>
-				</li>
-				{% else %}
-				<li class="nav-item">
-					<a class="nav-item nav-link" href="{% url 'ekimeimysql1:login' %}">ようこそ、ゲスト！ログインはこちら</a>
-				</li>
-				{% endif %}
-			</ul>
-		</div>
+	<nav class="head-nav">
+		<ul>
+			<li>
+				<a href="{% url 'ekimeimysql1:top' %}">駅名動画データベース</a>
+			</li>
+			<li>
+				<a href="{% url 'ekimeimysql1:creatortop' %}">作者から探す</a>
+			</li>
+			<li>
+				<a href="{% url 'ekimeimysql1:railwaytop' %}">鉄道などから探す</a>
+			</li>
+			<li>
+				<a href="{% url 'ekimeimysql1:songtop' %}">楽曲から探す</a>
+			</li>
+			{% if user.is_authenticated %}
+			<li>
+				<a class="nav-item nav-link" href="{% url 'ekimeimysql1:logout' %}">ログアウト</a>
+			</li>
+			{% else %}
+			<li class="nav-item">
+				<a class="nav-item nav-link" href="{% url 'ekimeimysql1:login' %}">ログイン</a>
+			</li>
+			{% endif %}
+		</ul>
 	</nav>
 
 	

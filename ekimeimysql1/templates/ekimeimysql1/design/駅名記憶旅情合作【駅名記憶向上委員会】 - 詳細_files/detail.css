@@ -1,0 +1,551 @@
+body {
+	font-family: "游ゴシック Medium", "Yu Gothic Medium", "游ゴシック体", YuGothic, "Noto Sans Japanese", Meiryo, メイリオ, "Hiragino Kaku Gothic ProN", "ヒラギノ角ゴ ProN W3", sans-serif;
+	margin: 0;
+	padding: 0;
+	color: #000;
+	font-size: 16px;
+	font-style: normal;
+	font-weight: 700;
+	line-height: 1;
+	letter-spacing: calc(33em / 1000);
+}
+
+* {
+	box-sizing: border-box;
+	word-wrap: break-word;
+	line-height: 1.5em;
+	margin: 0;
+	padding: 0;
+}
+
+a {
+	text-decoration: none;
+	color: #333;
+}
+
+a:hover {
+	color: #1cb1c4;
+}
+
+a. button {
+	color: inherit;
+	font-weight: inherit;
+	cursor: pointer;
+}
+
+h1, h2, h3, h4, h5, h6 {
+	font-size: 100%;
+	font-weight: inherit;
+	line-height: inherit;
+}
+
+ul, li {
+	list-style: none;
+}
+
+.background {
+	background: url();
+	background-position: center center;
+	position: relative;
+	z-index: 0;
+	/*overflow: hidden;*/
+	padding: 0 32px;
+}
+
+.background:before {
+	content: '';
+	background: inherit;
+	-webkit-filter: blur(5px);
+	-moz-filter: blur(5px);
+	-o-filter: blur(5px);
+	-ms-filter: blur(5px);
+	filter: blur(5px);
+	position: absolute;
+	top: -5px;
+	left: -5px;
+	right: -5px;
+	bottom: -5px;
+	z-index: -1;
+}
+
+.main-container {
+	max-width: 1080px;
+	padding: 32px;
+	margin: 0 auto;
+	display: -webkit-box;
+	display: -ms-flexbox;
+	display: flex;
+	-webkit-box-pack: justify;
+	-ms-flex-pack: justify;
+	background: white;
+}
+
+.movie-detail {
+	width: 60%;
+	padding: 8px;
+}
+
+.youtube-container {
+	position: sticky;
+	top: 32px;
+}
+
+.youtube {
+	position: relative;
+	width: 100%;
+}
+
+.youtube:before {
+	content: "";
+	display: block;
+	padding-top: calc(9/16*100%);
+}
+
+.youtube iframe {
+	position: absolute;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+}
+
+.movie-title {
+    font-size: 1.2rem;
+    line-height: 1.6;
+    padding: 16px 0;
+}
+
+.movie-channel {
+	display: flex;
+	margin: 8px 0;
+	padding: 8px 16px;
+	border: 1px solid #333;
+	border-radius: 4px;
+	align-items: center;
+}
+
+.movie-channel-img {
+	width: 36px;
+	height: 36px;
+	margin-right: 16px;
+}
+
+.movie-channel-img img {
+	width: 100%;
+	border-radius: 50%;
+}
+
+.movie-published-name {
+	padding-right: 16px;
+}
+
+.movie-statistics {
+	display: -webkit-box;
+	display: -ms-flexbox;
+	display: flex;
+	-webkit-box-pack: justify;
+	-ms-flex-pack: justify;
+	align-items: center;
+	justify-content: center;
+	margin: 0 0 16px 0;
+	padding: 8px 0;
+	/*background: #f7f7f7;*/
+}
+
+.movie-statistics-item {
+	padding: 0 8px;
+}
+
+.movie-statistics-num {
+	text-align: center;
+	padding-bottom: 2px;
+	font-size: 24px;
+	font-weight: 600;
+	line-height: 1;
+}
+
+.movie-statistics-name {
+	margin-top: 4px;
+	padding: 4px;
+	border-radius: 4px;
+	font-size: 14px;
+	text-align: center;
+	color: #577381;
+	background-color: #f0f0f0;
+}
+
+/*.detail-header {
+	color: #1cb1c4;
+	line-height: 1.44444;
+	margin: 16px 0 4px 0;
+	padding: 0 0 4px 4px;
+	border-bottom: 1px solid #1cb1c4;
+	border-left: 2px solid #1cb1c4;
+}*/
+
+.detail-header {
+	color: #fff;
+	margin: 16px 0 4px 0;
+	padding: 4px 8px 4px 16px;
+	background-color: #1cb1c4;
+	border-radius: 16px;
+}
+
+.detail-content {
+	padding: 0 0 0 16px;
+}
+
+.movie-description {
+	font-weight: normal;
+	font-size: 0.8em;
+}
+
+.song-table,
+.vocal-table {
+	width: 100%;
+	font-size: 0.9em;
+}
+
+.song-table tr td,
+.vocal-table tr td {
+	padding: 4px;
+}
+
+.song-name,
+.vocal-name {
+	min-width: 50%;
+	border-bottom: 1px solid #ddd;
+}
+
+.artist-name {
+	font-weight: normal;
+	border-bottom: 1px solid #ddd;
+}
+
+.part-header {
+	width: 100%;
+	height: 54px;
+	position: sticky;
+	top: 32px;
+	display: flex;
+	flex-direction: row;
+	align-items: stretch;
+	background: #fff;
+	cursor: pointer;
+	box-shadow: 2px 2px 4px rgba(0, 0, 0, 0.6);
+	margin: 0 0 8px 0;
+	border-radius: 8px;
+	z-index: 1000;
+}
+
+.part-name-short {
+	text-overflow: clip;
+	text-align: center;
+	background: #333;
+	color: #fff;
+	padding: 0 16px;
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+}
+
+.part-name-short span {
+	min-width: 30px;
+	white-space: nowrap;
+}
+
+.part-table {
+	padding: 4px 8px;
+	width: 100%;
+	table-layout: fixed;
+	word-break: break-all;
+	word-wrap: break-word;
+}
+
+.part-table td {
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+.td-category {
+	width: 5em;
+}
+
+.td-vocal {
+	width: 6em;
+}
+
+.row-2 {
+	font-size: 12px;
+	font-weight: normal;
+}
+
+.part-detail-container {
+	padding: 8px;
+	/*display: none;*/
+}
+
+.part-detail-table {
+	width: 100%;
+	font-size: 14px;
+	text-align: left;
+	/*border: 1px solid #333;*/
+	border-collapse: collapse;
+	table-layout: fixed;
+}
+
+.part-detail-table tr {
+	border-bottom: 1px solid #ccc;
+}
+
+.part-detail-table th {
+	width: 100px;
+	white-space: nowrap;
+}
+
+.part-detail-table th,
+.part-detail-table td {
+	/*border: 1px solid #333;*/
+	padding: 4px;
+}
+
+.part-detail {
+	/*background: #CAEFF9;*/
+	padding: 8px;
+	font-weight: normal;
+	font-size: 14px;
+}
+
+.part-detail-row {
+	width: 100%;
+	display: flex;
+}
+
+.part-detail-label {
+	font-weight: bold;
+}
+
+.station-list {
+	margin: 16px 0;
+}
+
+.key-station {
+	position: relative;
+}
+
+.key-station-end {
+	margin-bottom: 16px;
+}
+
+.key-station a {
+	background: #f0f2f4;
+	padding: 8px 8px 8px 48px;
+	display: block;
+}
+
+.key-station-icon {
+	position: absolute;
+	width: 16px;
+	height: 16px;
+	border-radius: 50%;
+	z-index: 200;
+	left: 24px;
+	top: 50%;
+	background: #fff;
+	/*border: 1px solid #333;*/
+	transform: translate(-25%, -50%);
+	box-shadow: 0px 0px 2px 1px rgba(0,0,0,0.9);
+
+}
+
+.station-before,
+.station-after,
+.line-before,
+.line-after {
+	position: absolute;
+	width: 8px;
+	height: 50%;
+	left: 24px;
+	background: #333;
+	z-index: 180;
+}
+
+.station-before,
+.line-before {
+	top: 0;
+}
+
+.station-after,
+.line-after {
+	bottom: 0;
+}
+
+.line-box {
+	position: sticky;
+	top: 86px;
+	background: #fff;
+	z-index: 900;
+	padding: 0 32px 0 48px;
+	font-weight: bold;
+	font-size: 14px;
+}
+
+.line-box a {
+	display: flex;
+	align-items: center;
+	padding: 16px 8px 16px 0;
+}
+
+.line-button {
+	position: absolute;
+	z-index: 300;
+	top: 50%;
+	right: 16px;
+	width: 0;
+	height: 0;
+	border-left: 6px solid transparent;
+	border-right: 6px solid transparent;
+	border-top: 10.4px solid #333;
+	transform: translate(0, -50%);
+	/*filter: drop-shadow(0px 0px 2px rgba(0,0,0,0.9));*/
+}
+
+.line-icon {
+	width: 24px;
+	height: 24px;
+	margin-right: 8px;
+}
+
+.line-icon img {
+	width: 100%;
+	border-radius: 50%;
+}
+
+.station-name {
+	position: relative;
+}
+
+.station-name a {
+	font-size: 0.9em;
+	padding: 0 0 0 48px;
+	display: block;
+	width: 100%;
+	height: 100%;
+	transition: transform 0.1s;
+}
+
+.station-name a:hover {
+	transform: translate(8px, 0);
+}
+
+.station-name:last-child a {
+	padding: 0 0 8px 48px;
+}
+
+.movie-station-list {
+	width: 40%;
+	padding: 8px;
+}
+
+.movie-line-name {
+	background-color: #1cb1c4;
+	color: #fff;
+	padding: 4px 8px;
+	margin: 8px 0;
+	position: sticky;
+	top: 96px;
+	cursor: pointer;
+}
+/*
+.station-name {
+	padding: 0;
+	color: rgba(0,0,0,0.6);
+}*/
+
+.station-name:hover {
+	color: #1cb1c4;
+}
+
+.parody-edge {
+	width: 100%;
+	height: 8px;
+	background: #f0f2f4;
+}
+
+.parody-station {
+	padding-left: 24px;
+}
+
+.parody-station > a {
+	padding: 2px 0 2px 16px;
+	display: block;
+	border-left: 8px solid #333;
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+}
+
+.parody-station:first-child > a {
+	padding: 8px 0 2px 16px;
+}
+
+.parody-station:last-child > a {
+	padding: 2px 0 8px 16px;
+}
+
+.parody-station-name {
+	white-space: nowrap;
+	font-size: 0.9em;
+}
+
+.parody-line-name {
+	font-size: 0.8em;
+	text-align: right;
+	width: 100%;
+	padding: 0 8px 0 32px;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+.parody-pref-name {
+	font-size: 0.8em;
+	padding-left: 8px;
+	min-width: 5em;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+	text-align: right;
+	max-width: 30%;
+}
+
+/*↓ design2*/
+.point-station {
+	background-color: #1cb1c4;
+	color: #fff;
+	padding: 4px 8px;
+	margin: 0;
+	position: sticky;
+	top: 96px;
+	cursor: pointer;
+}
+
+.line-list-container {
+	display: flex;
+}
+
+.open-button {
+	padding: 8px;
+}
+
+.line-list {
+	width: 100%;
+	border-left: 4px solid #1cb1c4;
+	margin: 0 auto;
+	padding: 0 16px;
+}
+
+.movie-line-name-new {
+	padding: 8px 0;
+}

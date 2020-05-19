@@ -1,37 +1,124 @@
 {% extends 'ekimeimysql1/base.html' %}
 
-{% block title %}{{ stationservice }}{% endblock %}
+{% block title %}{{ stationservice }} - {{ stationservice.line_service }}{% endblock %}
 
 {% load static %}
 {% block content %}
 <link rel="stylesheet" href="{% static 'ekimeimysql1/movielistbystationservice.css' %}">
-<div class="main-content">
-	<div class="line-name">{{ stationservice }}</div>
-	<a href="{% url 'ekimeimysql1:lineservicelistbycompanyview' %}">路線一覧へ戻る</a>
-	<ul class="line-ul">
-		<li class="line-li">
-			<div class="station-info" style="border-color: {{ stationservice.get_color }};">
-				<div class="station-name">{{ stationservice }}</div>
-				<div class="station-numbering">{{ stationservice.get_numbering }}</div>
+<div class="background">
+	<div class="station-header">
+		<div class="station-header-content">
+			<span class="station-category">駅</span>
+			<!-- <span class="service-category">運行系統</span> -->
+			<div class="station-name">{{ stationservice }}</div>
+			<div class="station-name-sub">{{ stationservice.station_name_k }} {{ stationservice.station_name_r }}
+			{% if stationservice.prev_group.get_numbering != " " and stationservice.next_group.get_numbering != " " %}
+				{% if stationservice.prev_group.get_numbering != stationservice.next_group.get_numbering %}
+					[ {{ stationservice.prev_group.get_numbering }}/ {{stationservice.next_group.get_numbering }}]
+				{% else %}
+					[ {{ stationservice.prev_group.get_numbering }}]
+				{% endif %}
+			{% endif %}
 			</div>
-			<ul class="station-ul">
-				<p>{{ stationservice.station_code.pref_code }}</p>
-			{% for station, transfers in movies.items %}
-				<li class="station-li"><!-- <a href="{% url 'ekimeimysql1:stationlistbylineview' station.line_code.line_code %}"> -->{{ station.line_code }}<!-- </a> --></li>
-				<ul class="service-ul">
-				{% for transfer, moviequery in transfers.items %}
-					<li class="service-li">{{ transfer }} <a href="{% url 'ekimeimysql1:movielistbylineservice' transfer.line_service_code.line_service_code %}">{{ transfer.line_service_code }}</a></li>
-					<ul>
-						{% for movie in moviequery %}
-							<li><a href="{% url 'ekimeimysql1:detail' movie.main_id %}">{{ movie.title }}</a></li>
+			<div class="line-name">
+				<div class="line-name-inner">
+					<div class="line-link">
+						<a href="{% url 'ekimeimysql1:movielistbylineservice' stationservice.line_service.pk %}">{{ stationservice.line_service }}</a>
+					</div>
+					<div class="station-before">
+						{% if stationservice.prev_station %}
+							<a href="{% url 'ekimeimysql1:movielistbystationservice' stationservice.prev_station.pk %}">＜ {{ stationservice.prev_station }}</a>
+						{% endif %}
+					</div>
+					<div class="station-after">
+						{% if stationservice.next_station %}
+							<a href="{% url 'ekimeimysql1:movielistbystationservice' stationservice.next_station.pk %}">{{ stationservice.next_station }} ＞</a>
+						{% endif %}
+					</div>
+				</div>
+			</div>
+			<div class="line-color">
+				<div class="line-color-before" style="background: {{ stationservice.prev_group.get_color }};"></div>
+				<div class="line-color-after" style="background: {{ stationservice.next_group.get_color }};"></div>
+			</div>
+			<div class="line-formal">
+				<div>
+					▶ <a href="{% url 'ekimeimysql1:movielistbystation' stationservice.station.pk %}">{{ stationservice.station }}</a> - <a href="{% url 'ekimeimysql1:movielistbyline' stationservice.station.line.pk %}">{{ stationservice.station.line }}</a>
+				</div>
+			{% if stationservicegroup %}
+				{% if different_line == True %}
+					{% for q in stationservicegroup %}
+					<div>
+						<a href="{% url 'ekimeimysql1:movielistbystationservice' q.pk %}">{{ q }}</a> [<a href="{% url 'ekimeimysql1:movielistbystation' q.station.pk %}">{{ q.station }}</a> - <a href="{% url 'ekimeimysql1:movielistbyline' stationservice.station.line.pk %}">{{ q.station.line }}</a>]
+					</div>
+					{% endfor %}
+				{% endif %}
+			{% endif %}
+			</div>
+			<div class="station-pref">
+				<a href="{% url 'ekimeimysql1:lineservicelistbyprefecture' stationservice.station.pref_code.pk %}">{{ stationservice.station.pref_code }}</a>
+			</div>
+		</div>
+	</div>
+
+	<a href="{% url 'ekimeimysql1:railwaytop' %}">路線一覧へ戻る</a>
+	<div class="main-content">
+		<div class="main-content-inner">
+			<div class="station-movie-list">
+				{% include 'ekimeimysql1/includes/movielist.html' %}
+			</div>
+			<div class="station-transfer">
+				<h4 class="transfer-header">乗換路線</h4>
+				<ul class="station-lines-ul">
+				{% if transfers %}
+				{% for station, transferstations in transfers.items %}
+					<li class="station-li">
+						<div class="transfer-line-formal">
+							<a href="{% url 'ekimeimysql1:movielistbyline' station.line.pk %}">{{ station.line }}</a>
+						</div>
+						<ul class="service-ul">
+						{% for transferstation in transferstations %}
+							{% if stationservicegroup.0 == transferstation and transferstation.prev_group.station.line == transferstation.next_group.station.line %}
+							{% elif transferstation == stationservice %}
+								<li class="service-li service-li-same">
+									<div class="transfer-station-name">{{ transferstation }}</div>
+									<div class="transfer-line-name">
+										<div class="line-service-name">{{ transferstation.line_service.with_company }}</div>
+										<div class="line-service-name-sub">{{ transferstation.line_service.line_service_name_sub }} {{ transferstation.line_service.f_or_s }}</div>
+									</div>
+								</li>
+							{% elif transferstation.prev_group != transferstation.next_group and stationservice.line_service != transferstation.line_service %}
+								{% if transferstation.prev_group == transferstation or transferstation.prev_group.station.line != transferstation.next_group.station.line %}
+								<li class="service-li" style="border-color: transparent;">
+									<div class="transfer-station-prev-color" style="background: {{ transferstation.prev_group.get_color }}"></div>
+									<div class="transfer-station-next-color" style="background: {{ transferstation.next_group.get_color }}"></div>
+									<a class="transfer-station-name" href="{% url 'ekimeimysql1:movielistbystationservice' transferstation.pk %}">{{ transferstation }}</a>
+									<a class="transfer-line-name" href="{% url 'ekimeimysql1:movielistbylineservice' transferstation.line_service.pk %}">
+										<div class="line-service-name">{{ transferstation.line_service.with_company }}</div>
+										<div class="line-service-name-sub">{{ transferstation.line_service.line_service_name_sub }} {{ transferstation.line_service.f_or_s }}</div>
+									</a>
+								</li>
+								{% endif %}
+							{% else %}
+								<li class="service-li" style="border-color: {{ transferstation.get_color }};">
+									<a class="transfer-station-name" href="{% url 'ekimeimysql1:movielistbystationservice' transferstation.pk %}">{{ transferstation }}</a>
+									<a class="transfer-line-name" href="{% url 'ekimeimysql1:movielistbylineservice' transferstation.line_service.pk %}">
+										<div class="line-service-name">{{ transferstation.line_service.with_company }}</div>
+										<div class="line-service-name-sub">{{ transferstation.line_service.line_service_name_sub }} {{ transferstation.line_service.f_or_s }}</div>
+									</a>
+								</li>
+							{% endif %}
 						{% endfor %}
-					</ul>
+						</ul>
+					</li>
 				{% endfor %}
+				{% else %}
+					<p>乗換路線はありません</p>
+				{% endif %}
 				</ul>
-			{% endfor %}
-			</ul>
-		</li>
-	</ul>
+			</div>
+		</div>
+	</div>
 	<small>&copy; 2020 nignagIC</small>
 </div>
 {% endblock %}

@@ -7,18 +7,17 @@
 <link rel="stylesheet" href="{% static 'ekimeimysql1/stationsearch.css' %}">
 <div class="main-content">
 	<p>駅名検索</p>
-	<form action="{% url 'ekimeimysql1:stationsearchview' %}" method="get">
+	<form action="{% url 'ekimeimysql1:stationsearch' %}" method="get">
 		<input type="text" name="q" value="{{ word }}">
 		<button type="submit">検索</button>
 	</form>
-	<a href="{% url 'ekimeimysql1:lineservicelistbycompanyview' %}">路線一覧へ戻る</a>
 	<h2>検索結果 - {{ word }} ({{ count }}件)</h2>
 	<table>
-		{% if stations %}
-			{% for station in stations %}
+		{% if stationservices %}
+			{% for stationservice in stationservices %}
 			<tr>
-				<td>{{ station }}</td>
-				<td><a href="{% url 'ekimeimysql1:stationservicelistbylineview' station.line_service_code.line_service_code %}">{{ station.line_service_code }}</a><small> - {{ station.station_code.line_code.line_name }}</small></td>
+				<td><a href="{% url 'ekimeimysql1:movielistbystationservice' stationservice.pk %}">{{ stationservice }}</td>
+				<td><a href="{% url 'ekimeimysql1:movielistbylineservice' stationservice.line_service.pk %}">{{ stationservice.line_service }}</a><small> - {{ stationservice.station.line.line_name }}</small></td>
 			</tr>
 			{% endfor %}
 		{% else %}

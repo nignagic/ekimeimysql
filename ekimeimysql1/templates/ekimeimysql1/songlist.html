@@ -1,0 +1,46 @@
+{% extends 'ekimeimysql1/base.html' %}
+
+{% block title %}楽曲一覧{% endblock %}
+
+{% load static %}
+{% block content %}
+<link rel="stylesheet" href="{% static 'ekimeimysql1/songlist.css' %}">
+<div class="background">
+	<div class="song-header">
+		<div class="song-header-content">
+			<div class="song-title">楽曲一覧</div>
+			<div class="song-bar">
+			</div>
+		</div>
+	</div>
+
+	<div class="main-content">
+		<div class="main-content-inner">
+			<div class="song-list">
+				<h4 class="song-list-header">楽曲一覧</h4>
+				<div class="song-list-content">
+					<table class="song-table">
+						{% for song in song_list %}
+							<tr>
+								<td class="song-name"><a href="{% url 'ekimeimysql1:movielistbysong' song.id %}">{{ song }}</a></td>
+								{% if song.artist %}
+									<td class="artist-name">
+									{% for artist in song.artist.all %}
+										<a href="{% url 'ekimeimysql1:movielistbyartist' artist.pk %}">{{ artist }}</a>
+										{% if forloop.last %}
+										{% else %}
+										/
+										{% endif %}
+									{% endfor %}
+									</td>
+								{% endif %}
+							</tr>
+						{% endfor %}
+					</table>
+				</div>
+			</div>
+		</div>
+	</div>
+	<small>&copy; 2020 nignagIC</small>
+</div>
+{% endblock %}

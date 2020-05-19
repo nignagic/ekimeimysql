@@ -1,0 +1,309 @@
+{% extends 'ekimeimysql1/base.html' %}
+{% load widget_tweaks %}
+{% load tags %}
+
+{% block title %}編集 - {{ part }}{% endblock %}
+
+{% load static %}
+{% block content %}
+<link rel="stylesheet" href="{% static 'ekimeimysql1/station_edit.css' %}">
+<link rel="stylesheet" href="//code.jquery.com/ui/1.11.4/themes/smoothness/jquery-ui.css" />
+<script src="//code.jquery.com/jquery-1.10.2.js"></script>
+<script src="//code.jquery.com/ui/1.11.4/jquery-ui.js"></script>
+
+<form action="" method="post" enctype="multipart/form-data">
+	<h2>駅情報編集</h2>
+	<div>{{ part }} > {{ part.song_name }}{% for song in part.part_song.all %}「{{ song }}」{% endfor %} - {{ part.participant.all.0 }}</div>
+	<div class="youtube-frame">
+		<div class="youtube-container">
+			<div class="youtube">
+				<iframe src="https://www.youtube.com/embed/{{ part.movie.main_id }}"  frameborder='0' gesture='media' allowfullscreen></iframe>
+			</div>
+		</div>
+	</div>
+	<form name="station_add" method="post">
+		<div class="station-editing-area">
+			<div class="station-list-container">
+				<ul class="tab-container">
+					<li class="tab is-active">都道府県から</li>
+					<li class="tab">事業者から</li>
+					<li class="tab">駅名検索</li>
+				</ul>
+				<div class="tab-content-group">
+					<div class="station-pref-list-tab tab-content is-show">
+						<div name="pref" size="18" id="pref-select">
+							<div value="0">樺太</div>
+							<div value="1">北海道</div>
+							<div value="2">青森県</div>
+							<div value="3">岩手県</div>
+							<div value="4">宮城県</div>
+							<div value="5">秋田県</div>
+							<div value="6">山形県</div>
+							<div value="7">福島県</div>
+							<div value="8">茨城県</div>
+							<div value="9">栃木県</div>
+							<div value="10">群馬県</div>
+							<div value="11">埼玉県</div>
+							<div value="12">千葉県</div>
+							<div value="13">東京都</div>
+							<div value="14">神奈川県</div>
+							<div value="15">新潟県</div>
+							<div value="16">富山県</div>
+							<div value="17">石川県</div>
+							<div value="18">福井県</div>
+							<div value="19">山梨県</div>
+							<div value="20">長野県</div>
+							<div value="21">岐阜県</div>
+							<div value="22">静岡県</div>
+							<div value="23">愛知県</div>
+							<div value="24">三重県</div>
+							<div value="25">滋賀県</div>
+							<div value="26">京都府</div>
+							<div value="27">大阪府</div>
+							<div value="28">兵庫県</div>
+							<div value="29">奈良県</div>
+							<div value="30">和歌山県</div>
+							<div value="31">鳥取県</div>
+							<div value="32">島根県</div>
+							<div value="33">岡山県</div>
+							<div value="34">広島県</div>
+							<div value="35">山口県</div>
+							<div value="36">徳島県</div>
+							<div value="37">香川県</div>
+							<div value="38">愛媛県</div>
+							<div value="39">高知県</div>
+							<div value="40">福岡県</div>
+							<div value="41">佐賀県</div>
+							<div value="42">長崎県</div>
+							<div value="43">熊本県</div>
+							<div value="44">大分県</div>
+							<div value="45">宮崎県</div>
+							<div value="46">鹿児島県</div>
+							<div value="47">沖縄県</div>
+							<div value="48">その他</div>
+						</div>
+						<div name="s0" size="18" class="line-select">
+						</div>
+						<script>
+							$('#pref-select').children('div').on('click', function() {
+								pref = $(this).attr('value');
+								var s = "http://localhost:8000/ekimeimysql1/api/line/" + pref + "/?format=json";
+								$(".line-option").hide();
+								$.getJSON(s, function(data) {
+									for (var i in data) {
+										var op_line = "<div value='" + data[i].line_service_pk + "' class='line-option'>" + data[i].__str__ + "</div>";
+										$(".line-select").append(op_line);
+									}
+								})
+							})
+						</script>
+						<select name="s1" size="18" class="station-select" data-line_name="" multiple>
+						</select>
+						<input type="button" name="station-reverse" class="station-reverse" value="逆順">
+						<input type="button" name="station-append" class="station-append" value="追加">
+						<script>
+							$(document).on('click', '.line-option', function() {
+								line = $(this).attr("value");
+								var s = "http://localhost:8000/ekimeimysql1/api/station/" + line + "/?format=json";
+								$('.station-select').empty();
+								$.getJSON(s, function(data) {
+									for (var i in data) {
+										var op_station = "<option value='" + data[i].station_service_pk + "' data-name='" + data[i].__str__ + "' class='station-option'>" + data[i].__str__ + "</option>"
+										$(".station-select").append(op_station);
+									}
+								})
+							})
+
+							$(document).on('click', '.station-reverse', function() {
+								var list = $('.station-option').toArray().reverse();
+								$('.station-select').empty().append(list);
+							})
+
+							$(document).on('click', '.line-search-button', function() {
+								station = $(this).parents('.stations-box').find('.station_service').attr("value");
+								var s = "http://localhost:8000/ekimeimysql1/api/transfer/" + station + "/?format=json";
+								$(".line-option").hide();
+								$.getJSON(s, function(data) {
+									for (var i in data) {
+										var op_line = "<div value='" + data[i].line_service_pk + "' class='line-option'>" + data[i].__str__ + "</div>";
+										$(".line-select").append(op_line);
+									}
+								})
+							})
+
+							$(function() {
+								$('.tab').click(function() {
+									$('.is-active').removeClass('is-active');
+									$(this).addClass('is-active');
+									$('.is-show').removeClass('is-show');
+									const index = $(this).index();
+									$('.tab-content').eq(index).addClass('is-show');
+								})
+							})
+						</script>
+					</div>
+					<div class="tab-content station-search-tab">
+						<div class="search-box">
+							<div>駅名検索(仮)</div>
+							<input type="textbox" class="namesearch"><input type="button" name="namesearch" class="namesearchbutton" value="検索">
+							<p></p>
+						</div>
+						<select name="s1" size="18" class="station-search-select" data-line_name="" multiple>
+						</select>
+					</div>
+					<script>
+						$('.namesearch').keypress(function(e) {
+							if (e.which == 13) {
+								namesearch();
+							}
+						})
+						$('.namesearchbutton').on('click', function() {
+							namesearch();
+						})
+						function namesearch() {
+							text = $('.namesearch').val();
+							var s = "http://localhost:8000/ekimeimysql1/api/stationsearch/" + text + "/?format=json";
+							$('.station-search-select').empty();
+							$.getJSON(s, function(data) {
+								for (var i in data) {
+									var op_station = "<option value='" + data[i].station_service_pk + "' data-name='" + data[i].__str__ + "' class='station-search-option'>" + data[i].__str__ + " ‐ " + data[i].line_service_name + "</option>"
+									$('.station-search-select').append(op_station)
+								}
+							})
+						}
+						$(document).ready(function() {
+							$('input,textarea[readonly]').not($('input[type="button"],input[type="submit"]')).keypress(function (e) {
+								if (!e) var e = window.event;
+								if (e.keyCode == 13) return false;
+							})
+						})
+					</script>
+				</div>
+			</div>
+			<div class="selected-list-container">
+		<h3>登録駅</h3>
+		<div class="selected-list">
+		{{ formset.management_form }}
+		{% for form in formset %}
+			{{ form.non_field_errors }}
+			<div class="station_form">
+				<div class="stations">
+					<div class="stations-handle">
+						<a class="sortable-handle">■</a>
+					</div>
+					<div class="stations-content">
+						<div class="stations-relation">
+							{{ form.id }}
+							{{ form.id_in_part | add_class:"id_in_part" }}
+							<div class="stations-relation-line"></div>
+							{{ form.back_rel | add_class:"back_rel" }}
+						</div>
+						<div class="stations-box">
+							<div class="stations-info">
+								{{ form.station_service | add_class:"station_service" }}
+								<div class="station-name-container">
+									<div class="station-name-fixed">{{ form.station_service.value | get_station_service }}</div>
+									歌唱名：
+									{{ form.station_sung_name | add_class:"station_sung_name" }}
+								</div>
+							</div>
+							<div class="line-search">
+								<a class="line-search-button">路線検索</a>
+							</div>
+							<div class="stations-remarks">備考<input type="textbox" name="remarks[]" class="stations-remarks-text"></div>
+							<div class="stations-delete">
+								<a class="sortable-delete">削除</a>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		{% endfor %}
+
+			{% for error in form.errors %}
+			{{ error }}
+			{% endfor %}
+	{% csrf_token %}
+		</div>
+			</div>
+		</div>
+		<button type="button" onclick="submit();" class="btn btn-primary">送信</button>
+	</form>
+</form>
+{% endblock %}
+
+{% block extrajs %}
+<link rel="stylesheet" href="//code.jquery.com/ui/1.11.4/themes/smoothness/jquery-ui.css" />
+<script src="//code.jquery.com/jquery-1.10.2.js"></script>
+<script src="//code.jquery.com/ui/1.11.4/jquery-ui.js"></script>
+<script>
+	$(function() {
+		var totalManageElement = $('input#id_stationinmovie_set-TOTAL_FORMS');
+		var initialManageElement = $('input#id_stationinmovie_set-INITIAL_FORMS');
+		initialManageElement.val(0);
+
+		$(document).on('click', '.station-append', function() {
+			$('.station-select option:selected').each(function() {
+				station_append(this);
+			})
+		})
+
+		$(document).on('click', '.station-search-option', function() {
+			station_append(this)
+		})
+
+		function station_append(station) {
+			var currentFileCount = 0;
+			$('.station_form').each(function() {
+				currentFileCount++;
+			})
+			val = $(station).attr("value");
+			name = $(station).data('name');
+			line_name = $(station).parent().data('line_name');
+			var element = "<div class='stations'><div class='stations-handle'><a class='sortable-handle'>■</a></div><div class='stations-content'><div class='stations-relation'><input type='name' name='stationinmovie_set-" + currentFileCount + "-id_in_part'id='id_stationinmovie_set-" + currentFileCount + "-id_in_part' class='id_in_part'  value='" + currentFileCount + "'><div class='stations-relation-line'></div><select name='stationinmovie_set-" + currentFileCount + "-back_rel' id='id_stationinmovie_set-" + currentFileCount + "-back_rel' class='back_rel'><option value='0'>同一駅</option><option value='1' selected='selected'>つながっている</option><option value='2'>離れている</option></select></div><div class='stations-box'><input type='checkbox' name='postvalue[]' value='" + val + "' class='station_checkbox' checked='checked'><div class='stations-info'><input type='hidden' name='stationinmovie_set-" + currentFileCount + "-station_service' id='id_stationinmovie_set-" + currentFileCount + "-station_service' class='station_service'  value='" + val + "'><div class='station-name-container'><div class='station-name-fixed'>" + name + "</div>歌唱名：<input type='name' name='stationinmovie_set-" + currentFileCount + "-station_sung_name'  value='" + name + "' id='id_stationinmovie_set-" + currentFileCount + "-station_sung_name' class='station_sung_name'></div></div><div class='line-search'><a class='line-search-button'>路線検索</a></div><div class='stations-remarks'>備考<input type='textbox' name='remarks[]' class='stations-remarks-text'></div><div class='stations-delete'><a class='sortable-delete'>削除</a></div></div></div></div>"
+			$('div#file-area').append("<div class'station_form'>" + element + "</div>");
+			$('div.selected-list').append("<div class='station_form'>" + element + "</div>");
+			currentFileCount += 1;
+			totalManageElement.attr('value', currentFileCount);
+			var selectedlist = $('.selected-list');
+			$(selectedlist).scrollTop(selectedlist[0].scrollHeight);
+		}
+
+		$('div.selected-list').sortable({
+			handle: ".sortable-handle",
+			update: function() {
+				$('.station_form').each(function(i, form) {
+					fields = ['id_in_part', 'movie_part', 'station_service', 'station_sung_name', 'non_line', 'back_rel']
+					$(form).find('.id_in_part').val(i);
+					$.each(fields,
+						function(index, elem) {
+							$(form).find('.' + elem).attr('name', 'stationinmovie_set-' + i + '-' + elem);
+							$(form).find('.' + elem).attr('id', 'id_stationinmovie_set-' + i + '-' + elem);
+						}
+					)
+				})
+			}
+		})
+
+		$(document).on('click', '.sortable-delete', function() {
+			$(this).parents(".station_form").remove();
+			$('.station_form').each(function(i, form) {
+				fields = ['id_in_part', 'movie_part', 'station_service', 'station_sung_name', 'non_line', 'back_rel']
+				$(form).find('.id_in_part').val(i);
+				$.each(fields,
+					function(index, elem) {
+						$(form).find('.' + elem).attr('name', 'stationinmovie_set-' + i + '-' + elem);
+						$(form).find('.' + elem).attr('id', 'id_stationinmovie_set-' + i + '-' + elem);
+					}
+				)
+			})
+			var currentFileCount = 0;
+			$('.station_form').each(function() {
+				currentFileCount++;
+			})
+			var totalManageElement = $('input#id_stationinmovie_set-TOTAL_FORMS');
+			totalManageElement.attr('value', currentFileCount);
+		})
+	})
+</script>
+{% endblock %}

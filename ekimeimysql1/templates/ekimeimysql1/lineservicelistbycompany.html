@@ -1,21 +1,34 @@
 {% extends 'ekimeimysql1/base.html' %}
 
-{% block title %}事業者一覧{% endblock %}
+{% block title %}路線一覧 - {{ company }}{% endblock %}
 
 {% load static %}
 {% block content %}
-<link rel="stylesheet" href="{% static 'ekimeimysql1/company.css' %}">
+<link rel="stylesheet" href="{% static 'ekimeimysql1/lineservicelistbycompany.css' %}">
+<div class="background">
+	<div class="company-header">
+		<div class="company-header-content">
+			<div class="company-title">{{ company }}</div>
+			<div class="company-bar">
+			</div>
+		</div>
+	</div>
 
-<div class="main-content">
-	<ul class="company-ul">
-		<li class="company-li">
-			<div class="company-name">{{ company }}</div>
-			<ul class="line-ul">
-				{% for line in lineservices %}
-				<li class="line-li"><a href="{% url 'ekimeimysql1:movielistbylineservice' line.line_service_code %}">{{ line }}</a></li>
-				{% endfor %}
-			</ul>
-		</li>
-	</ul>
+	<div class="main-content">
+		<div class="main-content-inner">
+			<div class="line-list">
+				<!-- <h4 class="line-list-header">楽曲一覧</h4> -->
+				<div class="line-list-content">
+					<table class="line-table">
+						{% for lineservice in lineservices %}
+							<tr>
+								<td class="line-name"><a href="{% url 'ekimeimysql1:movielistbylineservice' lineservice.id %}">{{ lineservice }}</a></td>
+							</tr>
+						{% endfor %}
+					</table>
+				</div>
+			</div>
+		</div>
+	</div>
 </div>
 {% endblock %}

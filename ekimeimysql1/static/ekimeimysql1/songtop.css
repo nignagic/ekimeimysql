@@ -41,58 +41,58 @@ h1, h2, h3, h4, h5, h6 {
 
 ul, li {
 	list-style: none;
-	margin: 0;
-	padding: 0;
+}
+
+.background {
+	background: #f0f0f0;
+}
+
+.song-header {
+	min-height: 256px;
+	padding: 64px 0;
+	width: 100%;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	text-align: center;
+	filter: drop-shadow(2px 2px 4px rgba(0, 0, 0, 0.6));
+}
+
+.song-header-content {
+	width: 100%;
+}
+
+.song-name {
+	font-size: 2.0em;
+}
+
+.song-bar {
+	margin: 16px 0 16px 0;
+	padding: 4px 0;
+	background: #c00;
+	color: #fff;
 }
 
 .main-content {
+	background: #fff;
 	padding: 32px;
+	box-shadow: 0 -2px 6px rgba(0,0,0,0.6);
+	display: flex;
 }
 
-.line-ul {
-	margin: 0;
-	padding: 0;
+.main-content-inner {
+	display: flex;
+	margin: 0 auto;
+	max-width: 1280px;
+	width: 100%;
 }
 
-.title {
-	font-size: 1.2rem;
-	margin: 16px 0;
+.song-content-list {
+	width: 100%;
 }
 
-.company-name {
-	padding: 8px 20px;
-	color: #fff;
-	position: relative;
-}
-
-.company-name:after {
-	display: block;
-	content: '';
-	position: absolute;
-	top: 16px;
-	left: 4px;
-	width: 6px;
-	height: 6px;
-	border-right: 1px solid #fff;
-	border-bottom: 1px solid #fff;
-	-webkit-transform: rotate(-45deg);
-	transform: rotate(-45deg);
-}
-
-.company-li:nth-child(even) .company-name {
-	background-color: #06262b;
-}
-
-.company-li:nth-child(odd) .company-name {
-	background-color: #001618;
-}
-
-.line-ul {
-	margin-left: 0px;
-	background-color: #f3f7f7;
-	padding: 16px 32px;
-}
-
-.line-li {
-	padding: 2px 0;
+.song-content-header {
+	width: 100%;
+	border-bottom: 2px solid #cc0;
+	padding: 8px;
 }

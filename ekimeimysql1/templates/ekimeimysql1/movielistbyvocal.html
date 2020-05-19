@@ -1,0 +1,47 @@
+{% extends 'ekimeimysql1/base.html' %}
+
+{% block title %}動画一覧 - {{ vocal }}{% endblock %}
+
+{% load static %}
+{% block content %}
+<link rel="stylesheet" href="{% static 'ekimeimysql1/movielistbydetail.css' %}">
+<div class="background">
+	<div class="detail-header">
+		<div class="detail-header-content">
+			<span class="detail-category vocal-background">ボーカル</span>
+			<div class="detail-name">{{ vocal.name }}</div>
+			<div class="detail-name-sub">{{ vocal.namerb }}</div>
+			<div class="detail-bar vocal-background">
+			</div>
+		</div>
+	</div>
+	<a href="{% url 'ekimeimysql1:vocallist' %}">ボーカル一覧</a>
+
+	<div class="main-content">
+		<div class="main-content-inner">
+			<div class="detail-movie-list">
+				{% include 'ekimeimysql1/includes/movielist.html' %}
+				<!-- 前へ の部分 -->
+				{% if page_obj.has_previous %}
+					<a href="?page={{ page_obj.previous_page_number }}">前へ</a>
+				{% endif %}
+
+				<!-- 数字の部分 -->
+				{% for num in page_obj.paginator.page_range %}
+					{% if page_obj.number == num %}
+						<span>{{ num }}</span>
+					{% else %}
+						<a href="?page={{ num }}">{{ num }}</a>
+					{% endif %}
+				{% endfor %}
+
+				<!-- 次へ の部分 -->
+				{% if page_obj.has_next %}
+					<a href="?page={{ page_obj.next_page_number }}">次へ</a>
+				{% endif %}
+			</div>
+		</div>
+	</div>
+	<small>&copy; 2020 nignagIC</small>
+</div>
+{% endblock %}

@@ -1,0 +1,48 @@
+{% extends 'ekimeimysql1/base.html' %}
+
+{% block title %}{{ stationservice }} - {{ stationservice.line_service }}{% endblock %}
+
+{% load static %}
+{% block content %}
+<link rel="stylesheet" href="{% static 'ekimeimysql1/movielistbystationservice.css' %}">
+<div class="main-content">
+	<p>{{ stationservice.station.pref_code }}</p>
+	<div class="station-name">{{ stationservice }}</div>
+	<div class="line-name"><a href="{% url 'ekimeimysql1:movielistbylineservice' stationservice.line_service.pk %}">{{ stationservice.line_service }}</a></div>
+	<a href="{% url 'ekimeimysql1:railwaysearch' %}">路線一覧へ戻る</a>
+	<ul class="line-ul">
+		<li class="line-li">
+			<div class="station-info" style="border-color: {{ stationservice.get_color }};">
+				<div class="station-name">{{ stationservice }}</div>
+				<div class="station-numbering">{{ stationservice.get_numbering }}</div>
+			</div>
+			<ul class="station-ul">
+			{% for station, transferstations in transfers.items %}
+				<li class="station-li"><!-- <a href="{% url 'ekimeimysql1:stationlistbylineview' station.line.pk %}"> -->{{ station.line }}<!-- </a> --></li>
+				<ul class="service-ul">
+				{% for transferstation in transferstations %}
+					<li class="service-li"><a href="{% url 'ekimeimysql1:movielistbystationservice' transferstation.pk %}">{{ transferstation }}</a> - <a href="{% url 'ekimeimysql1:movielistbylineservice' transferstation.line_service.pk %}">{{ transferstation.line_service }}</a></li>
+					<ul>
+					</ul>
+				{% endfor %}
+				</ul>
+			{% endfor %}
+			</ul>
+					<ul>
+						{% for movie in movies %}
+							<li class="movie_card">
+								<a href="{% url 'ekimeimysql1:detail' movie.main_id %}">
+									<img src="https://i.ytimg.com/vi/{{ movie.youtube_id }}/hqdefault.jpg">
+									{{ movie.title }}
+									{{ movie.channel }}
+									{{ movie.published_at }}
+									{{ movie.duration }}
+									{{ movie.category }}
+								</a></li>
+						{% endfor %}
+					</ul>
+		</li>
+	</ul>
+	<small>&copy; 2020 nignagIC</small>
+</div>
+{% endblock %}

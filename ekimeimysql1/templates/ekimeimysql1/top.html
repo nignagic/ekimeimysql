@@ -1,4 +1,66 @@
 {% extends "ekimeimysql1/base.html" %}
+{% block title %}駅名動画データベース{% endblock %}
+
+{% load static %}
 {% block content %}
-<p>トップ</p>
+<link rel="stylesheet" href="{% static 'ekimeimysql1/top.css' %}">
+<section class="top-menu-container">
+	<div class="top-menu-background">
+		<img src="">
+	</div>
+	<div class="top-search-container">
+		<h3 class="top-search-title">フリーワード検索<input type="text" name=""></h3>
+	</div>
+	<nav class="top-menu">
+		<ul>
+			<li>
+				<a>作者から探す</a>
+			</li>
+			<li>
+				<a>鉄道などから探す</a>
+			</li>
+			<li>
+				<a>楽曲から探す</a>
+			</li>
+		</ul>
+	</nav>
+</section>
+<section class="top-movie-list">
+	<div class="movie-list-left">
+		<h4 class="movie-list-header">新着動画</h4>
+		<ul class="movie-ul">
+			{% if movies %}
+			{% for movie in movies %}
+			<li class="movie-card">
+				<a href="{% url 'ekimeimysql1:detail' movie.main_id %}">
+					<img class="movie-img" src="https://i.ytimg.com/vi/{{ movie.youtube_id }}/hqdefault.jpg">
+					<div class="movie-info">
+			{% load tz %}
+						<p class="movie-published">{{ movie.published_at|timezone:'Asia/Tokyo'|date:"Y/n/d" }}
+							{% if movie.part_category %}
+							{% for category in movie.part_category %}
+								<span class="movie-category" style="background-color: #cc0;">{{ category }}</span>
+							{% endfor %}
+							{% endif %}
+						</p>
+						<p class="movie-title">{{ movie.title }}</p>
+						<p class="movie-channel">{{ movie.channel }}</p>
+					</div>
+				</a>
+			</li>
+			{% endfor %}
+			{% else %}
+			<p>該当する動画が見つかりませんでした。</p>
+			{% endif %}
+		</ul>
+	</div>
+	<div class="movie-list-right">
+	</div>
+</section>
+<section class="top-notice-container">
+	<div class="top-notice">
+	</div>
+	<div class="top-update">
+	</div>
+</section>
 {% endblock %}

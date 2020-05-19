@@ -1,0 +1,74 @@
+{% extends 'ekimeimysql1/base.html' %}
+
+{% block title %}{{ station }} - {{ station.line }}{% endblock %}
+
+{% load static %}
+{% block content %}
+<link rel="stylesheet" href="{% static 'ekimeimysql1/movielistbydetail.css' %}">
+<link rel="stylesheet" href="{% static 'ekimeimysql1/movielistbystation.css' %}">
+<div class="background">
+	<div class="station-header">
+		<div class="station-header-content">
+			<span class="station-category">駅</span>
+			<span class="formal-category">正式区間</span>
+			<div class="station-name">{{ station }}</div>
+			<div class="station-name-sub">{{ stationservice.station_name_k }} {{ stationservice.station_name_r }}
+			</div>
+			<div class="line-name">
+				<div class="line-name-inner">
+					<div class="line-link">
+						<a href="{% url 'ekimeimysql1:movielistbyline' station.line.pk %}">{{ station.line }}</a>
+					</div>
+					<div class="station-before">
+						{% if station.prev_station %}
+							<a href="{% url 'ekimeimysql1:movielistbystation' station.prev_station.pk %}">＜ {{ station.prev_station }}</a>
+						{% endif %}
+					</div>
+					<div class="station-after">
+						{% if station.next_station %}
+							<a href="{% url 'ekimeimysql1:movielistbystation' station.next_station.pk %}">{{ station.next_station }} ＞</a>
+						{% endif %}
+					</div>
+				</div>
+			</div>
+			<div class="line-color"></div>
+			<div class="line-service">
+				{% for stationservice in stationservices %}
+				<div>
+					<a href="{% url 'ekimeimysql1:movielistbystationservice' stationservice.pk %}">{{ stationservice }}</a> - <a href="{% url 'ekimeimysql1:movielistbylineservice' stationservice.line_service.pk %}">{{ stationservice.line_service }}</a>
+				</div>
+				{% endfor %}
+				</div>
+			<div class="station-pref">
+				<a href="{% url 'ekimeimysql1:lineservicelistbyprefecture' station.pref_code.pk %}">{{ station.pref_code }}</a>
+			</div>
+		</div>
+	</div>
+
+	<a href="{% url 'ekimeimysql1:railwaytop' %}">路線一覧へ戻る</a>
+	<div class="main-content">
+		<div class="main-content-inner">
+			<div class="station-movie-list">
+				{% include 'ekimeimysql1/includes/movielist.html' %}
+			</div>
+			<div class="station-transfer">
+				<h4 class="transfer-header">乗換路線</h4>
+				<ul class="station-lines-ul">
+				{% if transfers %}
+				{% for station in transfers %}
+					<li class="station-li">
+						<div class="transfer-line-formal">
+							<a href="{% url 'ekimeimysql1:movielistbyline' station.line.pk %}">{{ station.line }}</a>
+						</div>
+					</li>
+				{% endfor %}
+				{% else %}
+					<p>乗換路線はありません</p>
+				{% endif %}
+				</ul>
+			</div>
+		</div>
+	</div>
+	<small>&copy; 2020 nignagIC</small>
+</div>
+{% endblock %}

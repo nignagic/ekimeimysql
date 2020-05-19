@@ -1,0 +1,39 @@
+{% extends 'ekimeimysql1/base.html' %}
+
+{% block title %}動画一覧 - {{ channel.name }}{% endblock %}
+
+{% load static %}
+{% block content %}
+<link rel="stylesheet" href="{% static 'ekimeimysql1/movielistbydetail.css' %}">
+<div class="background">
+	<div class="detail-header">
+		<div class="detail-header-content">
+			<span class="detail-category channel-background">YouTubeチャンネル</span>
+			<div class="detail-name">{{ channel.name }}</div>
+			<div class="detail-name-sub">{{ channel.namerb }}</div>
+			<div class="detail-bar channel-background">
+				<a href="https://www.youtube.com/channel/{{ channel.pk }}">https://www.youtube.com/channel/{{ channel.pk }}</a>
+			</div>
+			<div class="detail-relation">
+				{% if channel.relation %}
+				{% for relation in channel.relation.all %}
+				<div>
+					<a href="{% url 'ekimeimysql1:movielistbyartist' parent.pk %}">{{ parent.name }}</a>
+				</div>
+				{% endfor %}
+				{% endif %}
+			</div>
+		</div>
+	</div>
+	<a href="{% url 'ekimeimysql1:channellist' %}">チャンネル一覧</a>
+
+	<div class="main-content">
+		<div class="main-content-inner">
+			<div class="detail-movie-list">
+				{% include 'ekimeimysql1/includes/movielist.html' %}
+			</div>
+		</div>
+	</div>
+	<small>&copy; 2020 nignagIC</small>
+</div>
+{% endblock %}

@@ -1,0 +1,63 @@
+{% extends 'ekimeimysql1/base.html' %}
+
+{% block title %}{{ lineservice }}{% endblock %}
+
+{% load static %}
+{% block content %}
+<link rel="stylesheet" href="{% static 'ekimeimysql1/movielistbydetail.css' %}">
+<link rel="stylesheet" href="{% static 'ekimeimysql1/movielistbyline.css' %}">
+<div class="background">
+	<div class="line-header">
+		<div class="line-header-content">
+			<span class="line-category">路線</span>
+			<span class="formal-category">正式区間</span>
+			<div class="line-name">{{ line }}</div>
+			<div class="line-name-sub">読み方</div>
+			<div class="line-bar">
+				{{ line.start_station }} ～ {{ line.end_station }}
+			</div>
+			<div class="line-color"></div>
+			<div class="line-service">
+				{% for lineservice in lineservices %}
+				<div>
+					<a href="{% url 'ekimeimysql1:movielistbylineservice' lineservice.pk %}">{{ lineservice }}</a>
+				</div>
+				{% endfor %}
+			</div>
+			<div class="line-pref">
+				{% for pref in line.pref_codes.all %}
+					<a href="{% url 'ekimeimysql1:lineservicelistbyprefecture' pref.pk %}">{{ pref }}</a>
+					{% if forloop.last %}
+					{% else %}
+						<span>/</span>
+					{% endif %}
+				{% endfor %}
+			</div>
+		</div>
+	</div>
+	<a href="{% url 'ekimeimysql1:railwaytop' %}">路線一覧へ戻る</a>
+
+	<div class="main-content">
+		<div class="main-content-inner">
+			<div class="line-movie-list">
+				{% include 'ekimeimysql1/includes/movielist.html' %}
+			</div>
+			<div class="station-list">
+				<h4 class="station-header">駅一覧</h4>
+				<ul class="line-ul">
+					{% for station in stations %}
+						<li class="line-li">
+							<a href="{% url 'ekimeimysql1:movielistbystation' station.pk %}">
+								<div class="station-info">
+									<div class="station-name">{{ station }}</div>
+								</div>
+							</a>
+						</li>
+					{% endfor %}
+				</ul>
+			</div>
+		</div>
+	</div>
+	<small>&copy; 2020 nignagIC</small>
+</div>
+{% endblock %}

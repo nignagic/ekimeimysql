@@ -1,12 +1,21 @@
 {% extends 'ekimeimysql1/base.html' %}
+{% load widget_tweaks %}
+{% load tags %}
 
-{% block title %}動画登録{% endblock %}
+{% block title %}動画・パート情報編集 - {{ movie }}{% endblock %}
 
 {% load static %}
 {% block content %}
 <link rel="stylesheet" href="{% static 'ekimeimysql1/register.css' %}">
+<link rel="stylesheet" href="//code.jquery.com/ui/1.11.4/themes/smoothness/jquery-ui.css" />
+<script src="//code.jquery.com/jquery-1.10.2.js"></script>
+<script src="//code.jquery.com/ui/1.11.4/jquery-ui.js"></script>
 
-	<div class="container">
+
+<div class="background" style="background: #333 no-repeat center; background-size: cover; background-attachment: fixed;">
+	<p><a href="{% url 'ekimeimysql1:list' %}">リストへ戻る</a></p>
+	<h2>動画登録</h2>
+	<div class="main-container">
 		<form name="y_idForm">
 			<input type="textbox" name="y_idtextbox">
 			<input type="button" value="動画情報取得" onclick="youtube_json()">
@@ -21,26 +30,15 @@
 				</div>
 			</div>
 		</div>
-	</div>
-	<div class="row">
 		<form action="" method="POST">
-			{{ form.non_field_errors }}
 			{% for field in form %}
-			<div class="form-group">
-				<!-- <label for="{{ field.id_for_label }}" class="">{{ field.label_tag }}</label> -->
-				<div>
-					{{ field.label_tag }}
-					{{ field }}
-					{{ field.errors }}
-				</div>
-			</div>
+			{{ field }}
 			{% endfor %}
 			{% csrf_token %}
 			<button type="submit" class="btn btn-primary btn-block">送信</button>
 		</form>
-		<a href="javascript:void(0);" onclick="window.open('{% url 'ekimeimysql1:popup_song_create' %}', 'subwin', 'width=500,height=500');">+Song</a>
-		<a href="javascript:void(0);" onclick="window.open('{% url 'ekimeimysql1:popup_vocal_create' %}', 'subwin', 'width=500,height=500');">+Vocal</a>
 	</div>
+</div>
 {% endblock %}
 
 {% block extrajs %}

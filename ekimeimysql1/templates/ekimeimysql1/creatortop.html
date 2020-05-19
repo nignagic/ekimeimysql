@@ -1,0 +1,35 @@
+{% extends 'ekimeimysql1/base.html' %}
+
+{% block title %}作者から探す{% endblock %}
+
+{% load static %}
+{% block content %}
+<link rel="stylesheet" href="{% static 'ekimeimysql1/creatortop.css' %}">
+<div class="background">
+	<div class="creator-header">
+		<div class="creator-header-content">
+			<div class="creator-name">作者から探す</div>
+			<!-- <div class="creator-bar">
+			</div> -->
+		</div>
+	</div>
+
+	<div class="main-content">
+		<div class="main-content-inner">
+			<div class="creator-list">
+				<h4 class="creator-list-header">作者一覧</h4>
+				<ul class="creator-ul">
+					{% if creator_list %}
+					{% for creator in creator_list %}
+						<li class="creator-li">
+							<a href="{% url 'ekimeimysql1:eachcreator' creator.pk %}">{{ creator }}</a>
+						</li>
+					{% endfor %}
+					{% endif %}
+				</ul>
+			</div>
+		</div>
+	</div>
+	<small>&copy; 2020 nignagIC</small>
+</div>
+{% endblock %}

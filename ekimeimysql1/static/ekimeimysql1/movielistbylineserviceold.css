@@ -1,0 +1,112 @@
+body {
+	font-family: "游ゴシック Medium", "Yu Gothic Medium", "游ゴシック体", YuGothic, "Noto Sans Japanese", Meiryo, メイリオ, "Hiragino Kaku Gothic ProN", "ヒラギノ角ゴ ProN W3", sans-serif;
+	margin: 0;
+	padding: 0;
+	color: #000;
+	font-size: 16px;
+	font-style: normal;
+	font-weight: 700;
+	line-height: 1;
+	letter-spacing: calc(33em / 1000);
+}
+
+* {
+	box-sizing: border-box;
+	word-wrap: break-word;
+	line-height: 1.5em;
+	margin: 0;
+	/*padding: 0;*/
+}
+
+a {
+	text-decoration: none;
+	color: #027181;
+}
+
+a:hover {
+	color: #1cb1c4;
+}
+
+a. button {
+	color: inherit;
+	font-weight: inherit;
+	cursor: pointer;
+}
+
+h1, h2, h3, h4, h5, h6 {
+	font-size: 100%;
+	font-weight: inherit;
+	line-height: inherit;
+}
+
+ul, li {
+	list-style: none;
+}
+
+.main-content {
+	padding: 32px;
+}
+
+.column {
+	display: flex;
+}
+
+.movie-list {
+	width: 64%;
+}
+
+.station-list {
+	width: 36%;
+}
+
+.line-ul {
+	margin: 0;
+	padding: 0;
+}
+
+.line-li {
+	margin-bottom: 4px;
+}
+
+.station-info {
+	/*padding: 8px 20px;*/
+	padding: 8px 16px 8px 8px;
+	color: #fff;
+	display: flex;
+	justify-content: space-between;
+	position: relative;
+	border-left: 16px solid;
+	background-color: #06262b;
+}
+
+.station-name {
+}
+
+.station-numbering {
+	text-align: right;
+}
+
+.station-info:after {
+	display: block;
+	/*content: '';*/
+	position: absolute;
+	top: 16px;
+	left: 4px;
+	width: 6px;
+	height: 6px;
+	border-right: 1px solid #fff;
+	border-bottom: 1px solid #fff;
+	-webkit-transform: rotate(-45deg);
+	transform: rotate(-45deg);
+}
+
+.line-name {
+	font-size: 1.2rem;
+	margin-bottom: 16px;
+}
+
+.station-ul {
+	margin-left: 0px;
+	background-color: #f3f7f7;
+	padding: 8px 8px 8px 30px;
+}
