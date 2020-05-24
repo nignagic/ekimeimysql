@@ -6,17 +6,21 @@ from django.urls import reverse_lazy
 from django.shortcuts import get_object_or_404, render, redirect
 
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
+from django.contrib.auth.mixins import PermissionRequiredMixin
 from django.contrib.auth.views import (
 	LoginView, LogoutView
 )
 from .forms import LoginForm
+from django.contrib.auth.decorators import permission_required
 
-from .models import Railway_type, Country, Region, Prefecture, Company, BelongsCategory, Line, Station, LineService, StationService, MovieCategory, Creator, YoutubeChannel, Name, Artist, Song, Vocal, Movie, Part, StationInMovie, get_next_station, get_next_stationservice, LineInMovie
+
+from .models import Railway_type, Country, Region, Prefecture, Company, BelongsCategory, Line, Station, LineService, StationService, MovieCategory, Creator, YoutubeChannel, Name, Artist, Song, Vocal, Movie, Part, StationInMovie, get_next_station, get_next_stationservice, LineInMovie, MovieUpdateInformation
 from . import forms
 
 import csv
 from io import TextIOWrapper
 
+from django.utils import timezone
 from datetime import date
 import urllib
 from django.http import HttpResponse
@@ -30,8 +34,10 @@ class Top(generic.ListView):
 
 	def get_context_data(self):
 		movies = Movie.objects.all().order_by('-published_at')[:6]
+		info_list = MovieUpdateInformation.objects.all()
 		context = {
-			'movies': movies
+			'movies': movies,
+			'info_list': info_list
 		}
 		return context
 
@@ -599,6 +605,7 @@ class ChannelListView(generic.ListView):
 	model = YoutubeChannel
 	template_name = 'ekimeimysql1/channellist.html'
 
+@permission_required('ekimeimysql1.add_railwaytype')
 def uploadRailwayType(request):
 	if 'csv' in request.FILES:
 		railwaytypes = []
@@ -617,6 +624,7 @@ def uploadRailwayType(request):
 	else:
 		return render(request, 'ekimeimysql1/upload.html')
 
+@permission_required('ekimeimysql1.add_country')
 def uploadCountry(request):
 	if 'csv' in request.FILES:
 		countries = []
@@ -637,6 +645,7 @@ def uploadCountry(request):
 	else:
 		return render(request, 'ekimeimysql1/upload.html')
 
+@permission_required('ekimeimysql1.add_region')
 def uploadRegion(request):
 	if 'csv' in request.FILES:
 		regions = []
@@ -659,6 +668,7 @@ def uploadRegion(request):
 	else:
 		return render(request, 'ekimeimysql1/upload.html')
 
+@permission_required('ekimeimysql1.add_prefecture')
 def uploadPrefecture(request):
 	if 'csv' in request.FILES:
 		prefectures = []
@@ -681,6 +691,7 @@ def uploadPrefecture(request):
 	else:
 		return render(request, 'ekimeimysql1/upload.html')
 
+@permission_required('ekimeimysql1.add_company')
 def uploadCompany(request):
 	if 'csv' in request.FILES:
 		companies = []
@@ -720,6 +731,7 @@ def uploadCompany(request):
 	else:
 		return render(request, 'ekimeimysql1/upload.html')
 
+@permission_required('ekimeimysql1.add_line')
 def uploadLine(request):
 	if 'csv' in request.FILES:
 		lines = []
@@ -780,6 +792,8 @@ def uploadLine(request):
 
 	else:
 		return render(request, 'ekimeimysql1/upload.html')
+
+@permission_required('ekimeimysql1.add_station')
 def uploadStation(request):
 	if 'csv' in request.FILES:
 		stations = []
@@ -928,6 +942,7 @@ def uploadStation(request):
 	else:
 		return render(request, 'ekimeimysql1/upload.html')
 
+@permission_required('ekimeimysql1.add_lineservice')
 def uploadLineService(request):
 	if 'csv' in request.FILES:
 		lineservices = []
@@ -1004,6 +1019,7 @@ def uploadLineService(request):
 	else:
 		return render(request, 'ekimeimysql1/upload.html')
 
+@permission_required('ekimeimysql1.add_stationservice')
 def uploadStationService(request):
 	if 'csv' in request.FILES:
 		stationservices = []
@@ -1075,26 +1091,181 @@ def uploadStationService(request):
 	else:
 		return render(request, 'ekimeimysql1/upload.html')
 
+@permission_required('ekimeimysql1.delete_company')
 def CompanyDelete(request):
 	Company.objects.all().delete()
 	return render(request, 'ekimeimysql1/upload.html')
 
+@permission_required('ekimeimysql1.delete_line')
 def LineDelete(request):
 	Line.objects.all().delete()
 	return render(request, 'ekimeimysql1/upload.html')
 
+@permission_required('ekimeimysql1.delete_station')
 def StationDelete(request):
 	Station.objects.all().delete()
 	return render(request, 'ekimeimysql1/upload.html')
 
+@permission_required('ekimeimysql1.delete_lineservice')
 def LineServiceDelete(request):
 	LineService.objects.all().delete()
 	return render(request, 'ekimeimysql1/upload.html')
 
+@permission_required('ekimeimysql1.delete_stationservice')
 def StationServiceDelete(request):
 	StationService.objects.all().delete()
 	return render(request, 'ekimeimysql1/upload.html')
 
+@permission_required('ekimeimysql1.change_line')
+def LineExport(request):
+	t = date.today()
+	output_name = t.strftime('%Y%m') + 'line.csv'
+	file_name = urllib.parse.quote((u'CSVファイル.csv').encode("utf8"))
+
+	response = HttpResponse(content_type='text/csv; charset=utf-8')
+	response['Content-Disposition'] = 'attachment; filename*=UTF-8\'\'{}'.format(file_name)
+	writer = csv.writer(response)
+
+	header = ['種類名', '鉄道種別', '路線コード', '路線グループコード', '路線正式名称', '路線名', '路線副名称', '事業者コード(code)', '事業者名(code)', '事業者id(id)', '事業者名(id)', '事業者ごとの並び順', '起点駅', '終点駅', '第n種', '貨物輸送', '事業者名2']
+	writer.writerow(header)
+
+	lines = Line.objects.all()
+	for line in lines:
+		if line.category:
+			category = line.category.category_name
+		else:
+			category = ""
+		railway_type_name = line.railway_type_name
+		line_code = line.line_code
+		line_group_code = line.line_group_code
+		line_name_formal = line.line_name_formal
+		line_name = line.line_name
+		line_name_sub = line.line_name_sub
+		if line.company_code:
+			company_code = line.company_code.company_code
+			company_code_name = line.company_code.company_name
+		else:
+			company_code = ""
+			company_code_name = ""
+		company = line.company.id
+		company_id_name = line.company.company_name
+		sort_by_company = line.sort_by_company
+		start_station = line.start_station
+		end_station = line.end_station
+		business_type = line.business_type
+		is_freight = line.is_freight
+		company_name_2 = line.company_name_2
+		# pref_codes = line.pref_codes
+
+		row = []
+		row += [category, railway_type_name, line_code, line_group_code, line_name_formal, line_name, line_name_sub, company_code, company_code_name, company, company_id_name, sort_by_company, start_station, end_station, business_type, is_freight, company_name_2]
+		writer.writerow(row)
+
+	return response
+
+@permission_required('ekimeimysql1.change_station')
+def StationExport(request):
+	t = date.today()
+	output_name = t.strftime('%Y%m') + 'station.csv'
+	file_name = urllib.parse.quote((u'CSVファイル.csv').encode("utf8"))
+
+	response = HttpResponse(content_type='text/csv; charset=utf-8')
+	response['Content-Disposition'] = 'attachment; filename*=UTF-8\'\'{}'.format(file_name)
+	writer = csv.writer(response)
+
+	header = ['種類名', '駅コード', '駅グループコード', '駅名', '駅名カナ', '駅名ローマ字', '鉄道種別', '路線名', '路線コード(code)', '路線名(code)', '路線id(id)', '路線名(id)', '都道府県コード', '都道府県名', '路線ごとの並び順', '都道府県(旧)', '郵便番号(旧)', '住所(旧)', '緯度(旧)', '経度(旧)', '開業日(旧)', '廃止日(旧)', '状態(旧)', '並び順(旧)', '並び順']
+	writer.writerow(header)
+
+	stations = Station.objects.all()
+	for station in stations:
+		if station.category:
+			category = station.category_name
+		else:
+			category = ""
+		station_code = station.station_code
+		station_group_code = station.station_group_code
+		station_name = station.station_name
+		station_name_kana = station.station_name_kana
+		station_name_en = station.station_name_en
+		railway_type = station.railway_type
+		line_name = station.line_name
+		if station.line_code:
+			line_code = station.line_code.line_code
+			line_code_name = station.line_code.line_name
+		else:
+			line_code = ""
+			line_code_name = ""
+		line = station.line.id
+		line_id_name = station.line.line_name
+		pref_code = station.pref_code.pref_code
+		pref_name = station.pref_code.pref_name
+		sort_by_line = station.sort_by_line
+		pref_cd_old = station.pref_cd_old
+		post_old = station.post_old
+		add_old = station.add_old
+		lon_old = station.lon_old
+		lat_old = station.lat_old
+		open_ymd_old = station.open_ymd_old
+		close_ymd_old = station.close_ymd_old
+		e_status_old = station.e_status_old
+		e_sort_old = station.e_sort_old
+		sort = station.sort
+
+		row = []
+		row += [category, station_code, station_group_code, station_name, station_name_kana, station_name_en, railway_type, line_name, line_code, line_code_name, line, line_id_name, pref_code, pref_name, sort_by_line, pref_cd_old, post_old, add_old, lon_old, lat_old, open_ymd_old, close_ymd_old, e_status_old, e_sort_old, sort]
+		writer.writerow(row)
+
+	return response
+
+@permission_required('ekimeimysql1.change_lineservice')
+def LineServiceExport(request):
+	t = date.today()
+	output_name = t.strftime('%Y%m') + 'lineservice.csv'
+	file_name = urllib.parse.quote((u'CSVファイル.csv').encode("utf8"))
+
+	response = HttpResponse(content_type='text/csv; charset=utf-8')
+	response['Content-Disposition'] = 'attachment; filename*=UTF-8\'\'{}'.format(file_name)
+	writer = csv.writer(response)
+
+	header = ['種類ID', '種類名' , '路線コード(運行系統)', '路線正式名(運行系統)', '路線正式副名称(運行系統)', '事業者名(簡易)', '接頭事業者名の有無', '路線名(運行系統)', '路線副名称(運行系統)', '事業者コード(code)', '事業者名(code)', '事業者id(id)', '事業者名(id)', '事業者ごとの並び順', '正式区間', '運行系統', '路線カラー']
+	writer.writerow(header)
+
+	lineservices = LineService.objects.all()
+	for lineservice in lineservices:
+		category = ""
+		category_name = ""
+		line_service_code = lineservice.line_service_code
+		line_service_name_formal = lineservice.line_service_name_formal
+		line_service_name_formal_sub = lineservice.line_service_name_formal_sub
+		# line_code = lineservice.line_code.line_code
+		# line_code_name = lineservice.line_code.line_name
+		# line = lineservice.line.id
+		# line_id_name = lineservice.line.line_name
+		company_name_simple = lineservice.company_name_simple
+		is_company_name = lineservice.is_company_name
+		line_service_name = lineservice.line_service_name
+		line_service_name_sub = lineservice.line_service_name_sub
+		if lineservice.company_code:
+			company_code = lineservice.company_code.company_code
+			company_code_name = lineservice.company_code.company_name
+		else:
+			company_code = ""
+			company_code_name = ""
+		company = lineservice.company.id
+		company_id_name = lineservice.company.company_name
+		sort_by_company = lineservice.sort_by_company
+		is_formal = lineservice.is_formal
+		is_service = lineservice.is_service
+		line_color = lineservice.line_color
+		# pref_codes = lineservice.pref_codes
+
+		row = []
+		row += [category, category_name, line_service_code, line_service_name_formal, line_service_name_formal_sub, company_name_simple, is_company_name, line_service_name, line_service_name_sub, company_code, company_code_name, company, company_id_name, sort_by_company, is_formal, is_service, line_color]
+		writer.writerow(row)
+
+	return response
+
+@permission_required('ekimeimysql1.change_stationservice')
 def StationServiceExport(request):
 	t = date.today()
 	output_name = t.strftime('%Y%m') + '_stationservice.csv'
@@ -1138,6 +1309,7 @@ def StationServiceExport(request):
 	return response
 
 
+@permission_required('ekimeimysql1.change_line')
 def EmergencyCode(request):
 	parts = Part.objects.all()
 	lineinmovies = []
@@ -1156,13 +1328,15 @@ def EmergencyCode(request):
 
 
 
-class CompanyRegisterView(generic.CreateView):
+class CompanyRegisterView(PermissionRequiredMixin, generic.CreateView):
 	template_name = 'ekimeimysql1/companyregister.html'
 	model = Company
 	form_class = forms.CompanyRegisterForm
+	permission_required = ("ekimeimysql1.add_company",)
 	def get_success_url(self):
 		return reverse_lazy('ekimeimysql1:lineregister', kwargs={'company_pk': self.object.pk})
 
+@permission_required('ekimeimysql1.add_line')
 def LineRegisterView(request, company_pk):
 	company = get_object_or_404(Company, pk=company_pk)
 	form = forms.LineRegisterForm(request.POST or None)
@@ -1179,6 +1353,7 @@ def LineRegisterView(request, company_pk):
 
 	return render(request, 'ekimeimysql1/lineregister.html', context)
 
+@permission_required('ekimeimysql1.add_station')
 def StationRegisterView(request, line_pk):
 	line = get_object_or_404(Line, pk=line_pk)
 	last_code = get_next_station()
@@ -1201,6 +1376,7 @@ def StationRegisterView(request, line_pk):
 
 	return render(request, 'ekimeimysql1/stationregister.html', context)
 
+@permission_required('ekimeimysql1.add_lineservice')
 def LineServiceRegisterView(request, company_pk):
 	company = get_object_or_404(Company, pk=company_pk)
 	form = forms.LineServiceRegisterForm(request.POST or None)
@@ -1215,6 +1391,7 @@ def LineServiceRegisterView(request, company_pk):
 
 	return render(request, 'ekimeimysql1/lineserviceregister.html', context)
 
+@permission_required('ekimeimysql1.add_stationservice')
 def StationServiceRegisterView(request, line_service_pk):
 	lineservice = get_object_or_404(LineService, pk=line_service_pk)
 	lines = Line.objects.filter(company=lineservice.company)
@@ -1243,6 +1420,7 @@ def StationServiceRegisterView(request, line_service_pk):
 
 	return render(request, 'ekimeimysql1/stationserviceregister.html', context)
 
+@permission_required('ekimeimysql1.change_stationservice')
 def Stationservicegroupcodeset(request):
 	if 'csv' in request.FILES:
 		updatestationservices = []
@@ -1270,16 +1448,24 @@ def Stationservicegroupcodeset(request):
 def detail_movie(request, main_id):
 	movie = get_object_or_404(Movie, main_id=main_id)
 	parts = Part.objects.filter(movie=movie).order_by('part_num')
+	if parts.count() > 1:
+		onlyonepart = False
+	else:
+		onlyonepart = True
 	songs = Song.objects.none()
 	for part in parts:
 		part_songs = part.part_song.all()
 		for song in part_songs:
 			songs |= Song.objects.filter(id=song.pk)
 
+	can_edit = request.user.groups.filter(name='can_edit').exists()
+
 	context = {
 		'movie': movie,
 		'parts': parts,
-		'songs': songs
+		'songs': songs,
+		'onlyonepart': onlyonepart,
+		'can_edit': can_edit
 	}
 
 	return render(request, 'ekimeimysql1/detail.html', context)
@@ -1291,13 +1477,15 @@ class OnlyYouMixin(UserPassesTestMixin):
 		user = self.request.user
 		return user.is_superuser
 
-class MovieRegisterView(OnlyYouMixin, generic.CreateView):
+class MovieRegisterView(generic.CreateView):
 	template_name = 'ekimeimysql1/register.html'
 	model = Movie
 	form_class = forms.MovieRegisterForm
+	permission_required = ('ekimeimysql1.add_movie')
 	def get_success_url(self):
 		return reverse_lazy('ekimeimysql1:part_edit', kwargs={'main_id': self.object.main_id})
 
+@permission_required('ekimeimysql1.add_part')
 def movie_part_edit(request, main_id):
 	movie = get_object_or_404(Movie, main_id=main_id)
 	form = forms.MovieUpdateForm(request.POST or None, instance=movie)
@@ -1338,6 +1526,7 @@ def movie_part_edit(request, main_id):
 
 	return render(request, 'ekimeimysql1/part_edit.html', context)
 
+@permission_required('ekimeimysql1.add_stationinmovie')
 def movie_part_station_edit(request, main_id, part_num):
 	part = get_object_or_404(Part, movie=main_id, part_num=part_num)
 	part_form = forms.PartEditForm(request.POST or None, instance=part)
@@ -1374,10 +1563,24 @@ def movie_part_station_edit(request, main_id, part_num):
 
 	return render(request, 'ekimeimysql1/station_edit.html', context)
 
+@permission_required('ekimeimysql1.add_movieupdateinformation')
+def UpdateInformation(request, main_id):
+	movie = get_object_or_404(Movie, main_id=main_id)
+	info = MovieUpdateInformation.objects.filter(movie=movie)
+	if info:
+		t = 'U'
+	else:
+		t = 'C'
+	i = MovieUpdateInformation(movie=movie, is_create=t, reg_date=timezone.now())
+	i.save()
+
+	return redirect('ekimeimysql1:detail', main_id=main_id)
+
 class SongCreate(generic.CreateView):
 	"""楽曲データの作成"""
 	model = Song
 	fields = '__all__'
+	permission_required = ('ekimeimysql1.add_song')
 	success_url = reverse_lazy('ekimeimysql1:linelist')
 
 class PopupSongCreate(SongCreate):
@@ -1396,6 +1599,7 @@ class ArtistCreate(generic.CreateView):
 	"""歌手データの作成"""
 	model = Artist
 	fields = '__all__'
+	permission_required = ('ekimeimysql1.add_artist')
 	success_url = reverse_lazy('ekimeimysql1:linelist')
 
 class PopupArtistCreate(ArtistCreate):
@@ -1414,6 +1618,7 @@ class VocalCreate(generic.CreateView):
 	"""ボーカルデータの作成"""
 	model = Vocal
 	fields = '__all__'
+	permission_required = ('ekimeimysql1.add_vocal')
 	success_url = reverse_lazy('ekimeimysql1:linelist')
 
 class PopupVocalCreate(VocalCreate):
@@ -1428,6 +1633,7 @@ class PopupVocalCreate(VocalCreate):
 		}
 		return render(self.request, 'ekimeimysql1/close.html', context)
 
+@permission_required('ekimeimysql1.change_line')
 def lineprefset(request):
 	stations = Station.objects.all()
 	for station in stations:
@@ -1437,6 +1643,7 @@ def lineprefset(request):
 
 	return render(request, 'ekimeimysql1/lineprefset.html')
 
+@permission_required('ekimeimysql1.change_lineservice')
 def lineserviceprefset(request):
 	stationservices = StationService.objects.all()
 	for stationservice in stationservices:
@@ -1446,6 +1653,7 @@ def lineserviceprefset(request):
 
 	return render(request, 'ekimeimysql1/lineprefset.html')
 
+@permission_required('ekimeimysql1.change_lineservice')
 def lineservicelineset(request):
 	stationservices = StationService.objects.all()
 	for stationservice in stationservices:

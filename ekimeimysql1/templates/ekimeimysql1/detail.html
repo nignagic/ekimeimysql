@@ -156,6 +156,9 @@
 			</div>
 			<div class="related-movie">
 			</div>
+			{% if can_edit %}
+			<a href="{% url 'ekimeimysql1:updateinformation' movie.main_id %}">更新情報登録</a>
+			{% endif %}
 		</div>
 		<div class="movie-station-list">
 			<div>
@@ -164,7 +167,7 @@
 			</div>
 			{% for part in parts %}
 			<div class="part-container">
-				<div class="part-header">
+				<div class="part-header" {% if onlyonepart %}style="display: none;"{% endif %}>
 					<div class="part-name-short"><span>{{ part.part_name_short }}</span></div>
 					<table class="part-table" data-part_id="{{ part.id }}" data-category="{{ part.category }}">
 						<tr>
@@ -196,7 +199,7 @@
 					</table>
 				</div>
 				<div class="part-detail-container">
-					<table class="part-detail-table">
+					<table class="part-detail-table" {% if onlyonepart %}style="display: none;"{% endif %}>
 						{% if part.part_name %}
 						<tr class="part-detail-row">
 							<th class="part-detail-label">パート名</th>

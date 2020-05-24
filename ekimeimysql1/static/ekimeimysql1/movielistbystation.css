@@ -70,13 +70,13 @@ ul, li {
 	color: #fff;
 }
 
-.service-category {
+.formal-category {
 	margin-top: 16px;
 	padding: 4px 8px;
-	background: #333;
+	background: #fff;
 	font-size: 0.8em;
 	border-radius: 4px;
-	color: #fff;
+	color: #333;
 }
 
 .station-name {
@@ -87,7 +87,7 @@ ul, li {
 .line-name {
 	margin: 16px 0 0 0;
 	padding: 4px 0;
-	background: #06262b;
+	background-color: #fff;
 }
 
 .line-name-inner {
@@ -100,7 +100,7 @@ ul, li {
 }
 
 .line-name a {
-	color: #fff;
+	color: #06262b;
 	text-decoration: underline;
 }
 
@@ -127,6 +127,7 @@ ul, li {
 	height: 8px;
 	margin: 0 0 16px 0;
 	display: flex;
+	background-color: #06262b;
 }
 
 .line-color-before,
@@ -135,7 +136,7 @@ ul, li {
 	width: 50%;
 }
 
-.line-formal {
+.line-service {
 	margin-bottom: 16px;
 }
 

@@ -106,15 +106,17 @@ ul, li {
 	width: 86%;
 	max-width: 1280px;
 	margin: 0 auto;
+	display: flex;
 }
 
 .movie-list-left {
 	width: 64%;
+	padding: 16px;
 }
 
 .movie-ul {
 	margin: 0;
-	padding: 16px;
+	padding: 0;
 }
 
 .movie-card {
@@ -171,5 +173,67 @@ ul, li {
 	padding: 4px;
 	color: #fff;
 	border-radius: 8px;
+	font-size: 0.9em;
+}
+
+.movie-list-right {
+	width: 36%;
+	padding: 32px;
+}
+
+.movie-list-right-inner {
+	text-align: center;
+	border: 1px solid #cc0;
+	padding: 16px;
+	width: 100%;
+	height: 100%;
+}
+
+.top-notice-container {
+	display: flex;
+	width: 86%;
+	max-width: 1280px;
+	margin: 0 auto;
+}
+
+.top-notice,
+.top-update {
+	width: 50%;
+	padding: 24px;
+}
+
+.notice-ul,
+.update-ul {
+	margin: 0;
+	padding: 8px;
+	height: 256px;
+	overflow-y: scroll;
+}
+
+.notice-li,
+.update-li {
+	margin: 0 0 4px 0;
+	padding: 4px;
+	border-bottom: 1px solid #ccc;
+}
+
+.notice-li a,
+.update-li a {
+	/*color: #333;*/
+}
+
+.notice-li a:hover,
+.update-li a:hover {
+	opacity: 0.8;
+}
+
+.notice-top,
+.update-top {
+	font-size: 0.8em;
+	font-weight: normal;
+}
+
+.notice-bottom,
+.update-bottom {
 	font-size: 0.9em;
 }

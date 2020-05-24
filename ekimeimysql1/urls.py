@@ -36,7 +36,8 @@ urlpatterns = [
 	path('popup/song_create/', views.PopupSongCreate.as_view(), name='popup_song_create'),
 	path('popup/artist_create/', views.PopupArtistCreate.as_view(), name='popup_artist_create'),
 	path('popup/vocal_create/', views.PopupVocalCreate.as_view(), name='popup_vocal_create'),
-	
+	path('updateinformation/<slug:main_id>', views.UpdateInformation, name="updateinformation"),
+
 	path('railwaytop/', views.RailwayTopView.as_view(), name='railwaytop'),
 	path('category/<int:pk>', views.LineServiceListbyCategoryView.as_view(), name='lineservicelistbycategory'),
 	path('region/<int:pk>', views.CompanyListbyRegionView.as_view(), name='companylistbyregion'),
@@ -79,6 +80,9 @@ urlpatterns = [
 	path('stationserviceregister/<int:line_service_pk>', views.StationServiceRegisterView, name='stationserviceregister'),
 
 
+	path('lineexport/', views.LineExport, name='lineexport'),
+	path('stationexport/', views.StationExport, name='stationexport'),
+	path('lineserviceexport/', views.LineServiceExport, name='lineserviceexport'),
 	path('stationserviceexport/', views.StationServiceExport, name='stationserviceexport'),
 
 

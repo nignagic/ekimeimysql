@@ -78,6 +78,9 @@ $(function(){
 </script>
 
 <div>
+  <a href="{% url 'ekimeimysql1:lineexport' %}">路線(正式区間)エクスポート</a>
+  <a href="{% url 'ekimeimysql1:stationexport' %}">駅(正式区間)エクスポート</a>
+  <a href="{% url 'ekimeimysql1:lineserviceexport' %}">路線(運行系統)エクスポート</a>
   <a href="{% url 'ekimeimysql1:stationserviceexport' %}">駅(運行系統)エクスポート</a>
 </div>
   <small>&copy; 2020 nignagIC</small>

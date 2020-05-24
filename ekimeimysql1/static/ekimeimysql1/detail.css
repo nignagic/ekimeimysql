@@ -296,6 +296,7 @@ ul, li {
 	/*border: 1px solid #333;*/
 	border-collapse: collapse;
 	table-layout: fixed;
+	margin-bottom: 16px;
 }
 
 .part-detail-table tr {
@@ -330,7 +331,7 @@ ul, li {
 }
 
 .station-list {
-	margin: 16px 0;
+	margin: 0 0 16px 0;
 }
 
 .key-station {

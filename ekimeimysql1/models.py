@@ -436,3 +436,19 @@ class LineInMovie(models.Model):
 	line_service = models.ForeignKey(LineService, null=True, on_delete=models.SET_NULL)
 	def __str__(self):
 		return self.line_service.line_service_name
+
+class MovieUpdateInformation(models.Model):
+	movie = models.ForeignKey(Movie, to_field='main_id', null=True, on_delete=models.SET_NULL)
+
+	INFO_TYPE = (
+		('C', '新規登録'),
+		('U', '更新')
+	)
+	is_create = models.CharField('新規登録か更新か', max_length=1, choices=INFO_TYPE, default='C')
+	reg_date = models.DateTimeField('登録・更新日時', blank=True)
+
+	def __str__(self):
+		return self.movie.title + " - " + self.get_is_create_display()
+
+	def text(self):
+		return "「" + self.movie.title + "」を" + self.get_is_create_display() + "しました。"
